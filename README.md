@@ -24,8 +24,8 @@ The application tracks visited IHOP locations, provides visual feedback, and sho
 ---
 
 ## Project Structure
-
-ihopping-arizona/
+ 
+<pre>ihopping-arizona/
 ├── IhoppingArizona-Frontend/ # React + TypeScript + Mantine + Vite
 │ ├── public/
 │ ├── src/
@@ -35,7 +35,7 @@ ihopping-arizona/
 │ ├── src/
 │ ├── build.gradle
 │ └── application.properties
-└── README.md
+└── README.md</pre>
 
 ## Contributing
 This is a personal capstone-style project, but contributions or feature suggestions are welcome.
