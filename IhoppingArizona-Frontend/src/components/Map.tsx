@@ -8,8 +8,9 @@ const ihopMarkerIcon = "/src/assets/icons8-pancake-stack-48.png";
 const mapWrapperStyle: React.CSSProperties = {
     width: "100%",
     height: "800px",
-    position: "relative", // ✅ Allows sidebar to be positioned within this div
+    position: "relative",
     overflow: "hidden",
+    paddingBottom: "2rem",
 };
 
 const mapContainerStyle: React.CSSProperties = {
@@ -21,14 +22,14 @@ const sidebarStyle: React.CSSProperties = {
     position: "absolute",
     top: 0,
     right: 0,
-    width: "50%", // ✅ Sidebar is limited to the map div
+    width: "50%",
     height: "100%",
     backgroundColor: "#ffffff",
     padding: "20px",
     boxShadow: "-2px 0px 10px rgba(0, 0, 0, 0.1)",
     zIndex: 10,
     transition: "transform 0.3s ease-in-out",
-    transform: "translateX(100%)", // ✅ Starts hidden
+    transform: "translateX(100%)",
 };
 
 const center = {
