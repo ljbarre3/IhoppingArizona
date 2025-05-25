@@ -1,4 +1,4 @@
-package Entities;
+package org.example.ihoparizona.Entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,6 +20,9 @@ public class IhopLocation {
 
     private String address;
     private String nickname;
+
+    private double latitude;
+    private double longitude;
 
     // Ratings out of 10
     private int locationRating;

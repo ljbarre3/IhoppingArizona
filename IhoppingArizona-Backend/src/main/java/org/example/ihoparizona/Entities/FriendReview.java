@@ -1,4 +1,4 @@
-package Entities;
+package org.example.ihoparizona.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
