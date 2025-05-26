@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/public").permitAll()       // no authentication
-                        .requestMatchers("/api/admin").authenticated()    // must be an user role
+                        .requestMatchers("/api/admin/**").authenticated()    // must be an user role
                         .anyRequest().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
