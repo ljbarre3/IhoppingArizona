@@ -47,7 +47,7 @@ createRoot(document.getElementById('root')!).render(
           clientId= "oXhM7jbpItm0e5ytK5fWkrSUDFHjb4Y5"
           authorizationParams={{
               redirect_uri: "http://localhost:5173/admin",
-              audience: "https://dev-tambq5b5783bb6e2.us.auth0.com/api/v2/"
+              audience: "https://ihoppingarizona/api"
           }}
           >
       <MantineProvider theme={theme} defaultColorScheme="light">
