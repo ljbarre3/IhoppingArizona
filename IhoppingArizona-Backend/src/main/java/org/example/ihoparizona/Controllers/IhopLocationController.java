@@ -3,7 +3,6 @@ package org.example.ihoparizona.Controllers;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.ihoparizona.Entities.IhopLocation;
 import org.example.ihoparizona.Services.IhopLocationService;
