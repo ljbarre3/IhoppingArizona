@@ -1,10 +1,6 @@
 package org.example.ihoparizona.Services;
 
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.example.ihoparizona.Entities.IhopLocation;
 import org.example.ihoparizona.Repositories.IhopLocationRepository;
 import org.springframework.stereotype.Service;
@@ -13,13 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 public class IhopLocationService {
 
-    private IhopLocationRepository ihopLocationRepository;
+    private final IhopLocationRepository ihopLocationRepository;
+
+    public IhopLocationService(IhopLocationRepository ihopLocationRepository) {
+        this.ihopLocationRepository = ihopLocationRepository;
+    }
 
     //GET
 
