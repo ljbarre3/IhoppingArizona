@@ -22,8 +22,8 @@ public class FriendReview {
     private String itemOrdered;
     private int personalRating; // Rating out of 10
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ihop_location_id", nullable = false)
-    @JsonBackReference // Prevents infinite recursion in JSON serialization
-    private IhopLocation ihopLocation;
+    @JsonBackReference
+    private IhopLocation location;
 }
