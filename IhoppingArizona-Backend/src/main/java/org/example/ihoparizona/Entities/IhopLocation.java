@@ -1,5 +1,6 @@
 package org.example.ihoparizona.Entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,11 @@ public class IhopLocation {
 
     private double finalScore; // Final calculated score
 
-    @OneToMany(mappedBy = "ihopLocation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private MainReview mainReview;
+
+    @OneToMany(mappedBy = "location",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<FriendReview> friendReviews;
 }

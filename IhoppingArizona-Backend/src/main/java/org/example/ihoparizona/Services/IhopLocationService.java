@@ -1,5 +1,6 @@
 package org.example.ihoparizona.Services;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.example.ihoparizona.Entities.IhopLocation;
 import org.example.ihoparizona.Repositories.IhopLocationRepository;
@@ -29,7 +30,6 @@ public class IhopLocationService {
 
     //Create
     public IhopLocation createIhopLocation(IhopLocation ihopLocation) {
-        calculateFinalScore(ihopLocation);
         return ihopLocationRepository.save(ihopLocation);
     }
 
@@ -41,29 +41,16 @@ public class IhopLocationService {
             existing.setNickname(newData.getNickname());
             existing.setLatitude(newData.getLatitude());
             existing.setLongitude(newData.getLongitude());
-            existing.setLocationRating(newData.getLocationRating());
-            existing.setAtmosphereRating(newData.getAtmosphereRating());
-            existing.setQualityRating(newData.getQualityRating());
-            existing.setCostRating(newData.getCostRating());
-            existing.setServiceRating(newData.getServiceRating());
-            existing.setFinalScore(newData.getFinalScore());
-            calculateFinalScore(existing);
             return ihopLocationRepository.save(existing);
         }).orElseThrow(() -> new RuntimeException("Ihop location not found"));
     }
 
     //delete
+    @Transactional
     public void deleteIhopLocation(Long id) {
+        if (!ihopLocationRepository.existsById(id)) {
+            throw new EntityNotFoundException("IHOP Location with ID " + id + " not found");
+        }
         ihopLocationRepository.deleteById(id);
-    }
-
-    private void calculateFinalScore(IhopLocation ihopLocation) {
-        int total = ihopLocation.getLocationRating()
-                + ihopLocation.getAtmosphereRating()
-                + ihopLocation.getQualityRating()
-                + ihopLocation.getCostRating()
-                + ihopLocation.getServiceRating();
-
-        ihopLocation.setFinalScore(total);
     }
 }
