@@ -32,19 +32,6 @@ public class IhopLocation {
     @NotNull
     private double longitude;
 
-    @Min(0) @Max(3)
-    private int locationRating;
-    @Min(0) @Max(10)
-    private int atmosphereRating;
-    @Min(0) @Max(10)
-    private int qualityRating;
-    @Min(0) @Max(10)
-    private int costRating;
-    @Min(0) @Max(10)
-    private int serviceRating;
-
-    private double finalScore; // Final calculated score
-
     @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private MainReview mainReview;
