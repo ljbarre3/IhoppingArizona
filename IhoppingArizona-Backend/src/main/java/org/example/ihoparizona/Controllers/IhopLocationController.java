@@ -52,6 +52,7 @@ public class IhopLocationController {
                                 loc.getMainReview().getAtmosphereRating(),
                                 loc.getMainReview().getQualityRating(),
                                 loc.getMainReview().getServiceRating(),
+                                loc.getMainReview().getCostRating(),
                                 loc.getMainReview().getFinalScore()
                         ) : null
                 ))
