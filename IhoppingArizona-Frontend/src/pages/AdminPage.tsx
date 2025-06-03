@@ -189,9 +189,9 @@ const AdminPage: React.FC = () => {
                 opened={locationModalOpen}
                 onClose={() => setLocationModalOpened(false)}
                 title={
-                    <Title order={3} style={{color: "#057dc4", fontWeight: 600}}>
+                    <div style={{ color: '#057dc4', fontWeight: 600 }}>
                         Add a New IHOP Location
-                    </Title>
+                    </div>
                 }
                 size="lg"
                 centered
@@ -206,6 +206,7 @@ const AdminPage: React.FC = () => {
                         label="Address"
                         value={locationFormData.address}
                         onChange={(e) => handleLocationChange('address', e.currentTarget.value)}
+                        required
                     />
                     <TextInput
                         label="Nickname"
