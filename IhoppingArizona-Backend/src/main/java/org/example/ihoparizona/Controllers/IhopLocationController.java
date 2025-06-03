@@ -8,6 +8,8 @@ import org.example.ihoparizona.Entities.IhopLocation;
 import org.example.ihoparizona.Entities.MainReview;
 import org.example.ihoparizona.Services.IhopLocationService;
 import org.example.ihoparizona.Services.MainReviewService;
+import org.example.ihoparizona.dto.IhopLocationWithReviewDTO;
+import org.example.ihoparizona.dto.MainReviewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,27 @@ public class IhopLocationController {
     @GetMapping("/list")
     public ResponseEntity<List<IhopLocation>> getAllIhopLocations() {
         return ResponseEntity.ok(ihopLocationService.getAllLocations());
+    }
+
+    @GetMapping("/list/with-main-reviews")
+    public ResponseEntity<List<IhopLocationWithReviewDTO>> getAllIhopLocationsWithMainReviews() {
+        List<IhopLocationWithReviewDTO> response = ihopLocationService.getAllLocations().stream()
+                .map(loc -> new IhopLocationWithReviewDTO(
+                        loc.getId(),
+                        loc.getAddress(),
+                        loc.getNickname(),
+                        loc.getLatitude(),
+                        loc.getLongitude(),
+                        loc.getMainReview() != null ? new MainReviewDTO(
+                                loc.getMainReview().getLocationRating(),
+                                loc.getMainReview().getAtmosphereRating(),
+                                loc.getMainReview().getQualityRating(),
+                                loc.getMainReview().getServiceRating(),
+                                loc.getMainReview().getFinalScore()
+                        ) : null
+                ))
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
