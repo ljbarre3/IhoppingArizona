@@ -1,4 +1,5 @@
 import { Container, Group, Title, Button, useMantineTheme} from "@mantine/core";
+import { Link } from 'react-router-dom';
 
 export default function Navbar() {
     const theme = useMantineTheme();
@@ -9,7 +10,9 @@ export default function Navbar() {
                 <span style={{ color: theme.colors.customBlue[8] }}>IHOP</span><span style={{ color: theme.colors.customRed[6] }}>ping Arizona</span> {/* IHOP Red */}
             </Title>
             <Group justify="center">
-                <Button style={{ color: theme.colors.customBlue[8] }} variant="subtle">Map</Button>
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                    <Button style={{ color: theme.colors.customBlue[8] }} variant="subtle">Map</Button>
+                </Link>
                 <Button style={{ color: theme.colors.customBlue[8] }} variant="subtle">About Our Journey</Button>
                 <Button style={{ color: theme.colors.customBlue[8] }} variant="subtle">Contact Us</Button>
             </Group>
