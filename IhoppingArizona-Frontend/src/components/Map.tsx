@@ -1,6 +1,6 @@
 import {APIProvider, Map, AdvancedMarker} from '@vis.gl/react-google-maps';
 import {Button, Container, Paper} from "@mantine/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ihopMarkerIcon = "/src/assets/icons8-pancake-stack-48.png";
 
@@ -37,35 +37,71 @@ const center = {
     lng: -111.093,
 };
 
-const ihopLocations = [
-    { lat: 33.46184467434575, lng: -112.16970427916937 }, // 51st Ave and the I-10
-    { lat: 33.63917152288028, lng: -112.35443101668382 }, // Bell Rd and Towne Center Dr
-    { lat: 33.475394663127545, lng: -112.22003505524115 }, // 75th and West Encanto Blvd
-    { lat: 33.32046744314331, lng: -111.97531910975655}, // I-10 and Ray rd
-    { lat: 33.56511149064939, lng: -112.28770528920981 }, // Olive and 107th Ave
-    { lat: 33.71173561286699, lng: -112.27415425968385}, // Happy Valley road and lake pleasant pkwy
-    { lat: 33.06549202826899, lng: -112.04709123718631}, // East Edison Road and the Maricopa Rd
-    { lat: 33.43679030073408, lng: -111.72018619297903}, // Brown Rd and higley road
-    { lat: 35.208186762570044, lng: -111.61037111398267}, // Route 66 and 4th Street flagstaff
-    { lat: 33.47519424055215, lng: -111.9865860741758} // Oak St and 44th Street
+type IhopLocation = {
+    id: number;
+    address: string;
+    nickname?: string;
+    latitude: number;
+    longitude: number;
+    mainReview?: MainReview | null;
+}
 
-];
+type MainReview = {
+    locationRating: number;
+    atmosphereRating: number;
+    qualityRating: number;
+    costRating: number;
+    serviceRating: number;
+    finalScore: number;
+}
 
 export default function GoogleMap() {
-    const [selectedIHOP, setSelectedIHOP] = useState<{ lat: number; lng: number } | null>(null);
+    const [ihopLocations, setIhopLocations] = useState<IhopLocation[]>([]);
+    const [selectedIhopLocation, setSelectedIhopLocation] = useState<IhopLocation | null>(null);
+
+    useEffect(() => {
+        const fetchLocations = async () => {
+            try {
+                const res = await fetch('http://localhost:8080/api/admin/ihopLocation/list/with-main-reviews', {});
+                if (!res.ok) throw new Error('Failed to fetch IHOP locations');
+                const data: IhopLocation[] = await res.json();
+                const formatted = data.map((loc) => ({
+                    id: loc.id,
+                    latitude: loc.latitude,
+                    longitude: loc.longitude,
+                    address: loc.address,
+                    nickname: loc.nickname,
+                    mainReview: loc.mainReview ?? null,
+                }));
+                setIhopLocations(formatted);
+            } catch (err) {
+                console.error('Error loading locations:', err);
+            }
+        };
+
+        fetchLocations();
+    }, []);
 
     return (
         <Container size="xl" my="xl" style={{ display: "flex", justifyContent: "center" }}>
             <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
                 <div style={mapWrapperStyle}>
                     <Map style={mapContainerStyle} defaultCenter={center} defaultZoom={7} mapId="your-map-style-id">
-                        {ihopLocations.map((location, index) => (
+                        {ihopLocations.map((location) => (
                             <AdvancedMarker
-                                key={index}
-                                position={location}
-                                onClick={() => setSelectedIHOP(location)}
+                                key={location.id}
+                                position={{lat: location.latitude, lng: location.longitude}}
+                                onClick={() => setSelectedIhopLocation(location)}
                             >
-                                <img src={ihopMarkerIcon} alt="IHOP Marker" width={40} height={40} />
+                                <img
+                                    src={ihopMarkerIcon}
+                                    alt="IHOP Marker"
+                                    width={40}
+                                    height={40}
+                                    style={{
+                                        filter: location.mainReview ? 'none' : 'grayscale(100%)',
+                                    }}
+                                />
                             </AdvancedMarker>
                         ))}
                     </Map>
@@ -73,14 +109,16 @@ export default function GoogleMap() {
                     <div
                         style={{
                             ...sidebarStyle,
-                            transform: selectedIHOP ? "translateX(0%)" : "translateX(100%)"
+                            transform: selectedIhopLocation ? "translateX(0%)" : "translateX(100%)"
                         }}
                     >
                         <Paper style={{ padding: "20px" }}>
                             <h2>IHOP Information</h2>
-                            <p><strong>Latitude:</strong> {selectedIHOP?.lat}</p>
-                            <p><strong>Longitude:</strong> {selectedIHOP?.lng}</p>
-                            <Button onClick={() => setSelectedIHOP(null)} color="red" mt="md">
+                            <p><strong>Nickname:</strong> {selectedIhopLocation?.nickname || 'N/A'}</p>
+                            <p><strong>Address:</strong> {selectedIhopLocation?.address}</p>
+                            <p><strong>Latitude:</strong> {selectedIhopLocation?.latitude}</p>
+                            <p><strong>Longitude:</strong> {selectedIhopLocation?.longitude}</p>
+                            <Button onClick={() => setSelectedIhopLocation(null)} color="red" mt="md">
                                 Close
                             </Button>
                         </Paper>
