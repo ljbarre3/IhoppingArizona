@@ -98,7 +98,7 @@ const AdminPage: React.FC = () => {
             } else {
                 setCreatedMessage(`Failed to Add Ihop Location: Error Code(${res.status})`);
             }
-        } catch (err) {
+        } catch {
             setCreatedMessage(`An unexpected error occurred`);
         }
     };
