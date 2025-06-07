@@ -1,8 +1,11 @@
 import {APIProvider, Map, AdvancedMarker} from '@vis.gl/react-google-maps';
-import {Button, Container, Paper} from "@mantine/core";
+import {Button, Container, Paper, Title, Text} from "@mantine/core";
 import { useState, useEffect } from "react";
+import PancakeReview from '../components/PancakeReview';
+import {FinalPancakeStack} from '../components/FinalPancakeStack';
 
 const ihopMarkerIcon = "/src/assets/icons8-pancake-stack-48.png";
+
 
 
 const mapWrapperStyle: React.CSSProperties = {
@@ -112,13 +115,32 @@ export default function GoogleMap() {
                             transform: selectedIhopLocation ? "translateX(0%)" : "translateX(100%)"
                         }}
                     >
-                        <Paper style={{ padding: "20px" }}>
-                            <h2>IHOP Information</h2>
-                            <p><strong>Nickname:</strong> {selectedIhopLocation?.nickname || 'N/A'}</p>
-                            <p><strong>Address:</strong> {selectedIhopLocation?.address}</p>
-                            <p><strong>Latitude:</strong> {selectedIhopLocation?.latitude}</p>
-                            <p><strong>Longitude:</strong> {selectedIhopLocation?.longitude}</p>
-                            <Button onClick={() => setSelectedIhopLocation(null)} color="red" mt="md">
+                        <Paper p="lg">
+                            <Text fw={700} fz="lg">{selectedIhopLocation?.address}</Text>
+                            <Text fz="sm" c="dimmed" mb="md">{selectedIhopLocation?.nickname || 'Unnamed Location'}</Text>
+
+                            {selectedIhopLocation?.mainReview ? (
+                                <>
+                                    <Title order={4} mb="xs">Overall Score: {`${Math.round((selectedIhopLocation.mainReview.finalScore / 43) * 100)}%`} ({selectedIhopLocation.mainReview.finalScore}/43)</Title>
+                                    <FinalPancakeStack finalScore={selectedIhopLocation.mainReview.finalScore}></FinalPancakeStack>
+                                    {[
+                                        { label: "Location", value: selectedIhopLocation.mainReview.locationRating, max: 3 },
+                                        { label: "Atmosphere", value: selectedIhopLocation.mainReview.atmosphereRating },
+                                        { label: "Quality", value: selectedIhopLocation.mainReview.qualityRating },
+                                        { label: "Cost", value: selectedIhopLocation.mainReview.costRating },
+                                        { label: "Service", value: selectedIhopLocation.mainReview.serviceRating },
+                                    ].map(({ label, value, max = 10 }) => (
+                                        <div key={label} style={{ marginBottom: 16 }}>
+                                            <Text fw={600}>{label}</Text>
+                                            <PancakeReview count={value} max={max} size={30} />
+                                        </div>
+                                    ))}
+                                </>
+                            ) : (
+                                <Text c="gray">No review yet for this location.</Text>
+                            )}
+
+                            <Button onClick={() => setSelectedIhopLocation(null)} color="red" fullWidth mt="xl">
                                 Close
                             </Button>
                         </Paper>
