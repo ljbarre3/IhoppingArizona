@@ -1,17 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {Title, Text, Container, Button, Modal, Stack, TextInput, NumberInput, Group, Select} from '@mantine/core';
+import {Title, Text, Container, Button, Modal, Stack, NumberInput, Group, Select} from '@mantine/core';
 import {useAuth0} from '@auth0/auth0-react';
+import AddLocationModal from '../components/AddLocationModal.tsx';
 
 
 const AdminPage: React.FC = () => {
     const { getAccessTokenSilently } = useAuth0();
-
-    type LocationFormData = {
-        address: string;
-        nickname: string;
-        latitude: number | null;
-        longitude: number | null;
-    };
 
     type ReviewFormData = {
         selectedLocationId: string,
@@ -28,15 +22,9 @@ const AdminPage: React.FC = () => {
         nickname?: string;
     };
 
-    const [locationModalOpen, setLocationModalOpened] = useState(false);
-    const [reviewModalOpen, setReviewModalOpened] = useState(false);
 
-    const [locationFormData, setLocationFormData] = useState<LocationFormData>({
-        address: '',
-        nickname: '',
-        latitude: null,
-        longitude: null,
-    });
+    const [reviewModalOpen, setReviewModalOpened] = useState(false);
+    const [locationModalOpen, setLocationModalOpened] = useState(false);
 
     const [reviewFormData, setReviewFormData] = useState<ReviewFormData>({
         selectedLocationId: '',
@@ -77,31 +65,21 @@ const AdminPage: React.FC = () => {
         if (reviewModalOpen) fetchIhopLocations();
     }, [reviewModalOpen]);
 
-    const [locationResponseMessage, setLocationResponseMessage] = useState('');
+
     const [reviewResponseMessage, setReviewResponseMessage] = useState('');
 
     const [createdMessage, setCreatedMessage] = useState('');
-
-    const handleLocationChange = <K extends keyof LocationFormData>(key: K, value: LocationFormData[K]) => {
-        setLocationFormData((prev) => ({...prev, [key]: value}));
-    };
 
     const handleReviewChange = <K extends keyof ReviewFormData>(key: K, value: ReviewFormData[K]) => {
         setReviewFormData((prev) => ({...prev, [key]: value}));
     };
 
-    const handleLocationSubmit = async () => {
-
-        const isInvalid = Object.entries(locationFormData).some(([key, value]) => {
-            if (key === 'address' || key === 'nickname') return false;
-            return value === null;
-        });
-
-        if (isInvalid) {
-            setLocationResponseMessage('Please fill out all required fields.');
-            return;
-        }
-
+    const handleAddLocation = async (location: {
+        nickname: string;
+        address: string;
+        latitude: number;
+        longitude: number;
+    }) => {
         try {
             const token = await getAccessTokenSilently();
             const res = await fetch('http://localhost:8080/api/admin/ihopLocation/addIhop', {
@@ -110,26 +88,18 @@ const AdminPage: React.FC = () => {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(locationFormData),
+                body: JSON.stringify(location),
             });
 
             if (res.ok) {
-                setLocationResponseMessage('');
                 setCreatedMessage('Successfully Added New Ihop Location!');
                 setTimeout(() => setCreatedMessage(''), 3000);
                 setLocationModalOpened(false);
-                setLocationFormData({
-                    address: '',
-                    nickname: '',
-                    latitude: null,
-                    longitude: null,
-                });
             } else {
-                const data = await res.text();
-                setLocationResponseMessage(`Error: ${data}`);
+                setCreatedMessage(`Failed to Add Ihop Location: Error Code(${res.status})`);
             }
         } catch (err) {
-            setLocationResponseMessage(`Request failed: ${err}`);
+            setCreatedMessage(`An unexpected error occurred`);
         }
     };
 
@@ -173,6 +143,10 @@ const AdminPage: React.FC = () => {
         }
     };
 
+    const handleCloseModal = () => {
+        setLocationModalOpened(false);
+    };
+
     return (
         <Container>
             <Title order={2} mb="md" style={{color: "white"}}>Admin Dashboard</Title>
@@ -185,78 +159,11 @@ const AdminPage: React.FC = () => {
             <Button mt="md" onClick={() => setReviewModalOpened(true)}>Add Review</Button>
             </Group>
 
-            <Modal
+            <AddLocationModal
                 opened={locationModalOpen}
-                onClose={() => setLocationModalOpened(false)}
-                title={
-                    <div style={{ color: '#057dc4', fontWeight: 600 }}>
-                        Add a New IHOP Location
-                    </div>
-                }
-                size="lg"
-                centered
-                overlayProps={{
-                    backgroundOpacity: 0.55,
-                    blur: 3,
-                }}
-                radius="md"
-            >
-                <Stack mt="md">
-                    <TextInput
-                        label="Address"
-                        value={locationFormData.address}
-                        onChange={(e) => handleLocationChange('address', e.currentTarget.value)}
-                        required
-                    />
-                    <TextInput
-                        label="Nickname"
-                        value={locationFormData.nickname}
-                        onChange={(e) => handleLocationChange('nickname', e.currentTarget.value)}
-                    />
-
-                    <Group grow mt="md">
-                        <NumberInput
-                            label="Latitude"
-                            value={locationFormData.latitude as number}
-                            onChange={(value) => handleLocationChange('latitude', value === '' || value === null ? null : Number(value))}
-                            min={-90}
-                            max={90}
-                            decimalScale={4}
-                            hideControls
-                            required
-                        />
-                        <NumberInput
-                            label="Longitude"
-                            value={locationFormData.longitude as number}
-                            onChange={(value) => handleLocationChange('longitude', value === '' || value === null ? null : Number(value))}
-                            min={-180}
-                            max={180}
-                            decimalScale={4}
-                            hideControls
-                            required
-                        />
-                    </Group>
-
-                    {locationResponseMessage && (
-                        <Text mt="md" color="blue">
-                            {locationResponseMessage}
-                        </Text>
-                    )}
-
-                    <Button
-                        fullWidth
-                        color="customBlue.8"
-                        radius="md"
-                        onClick={handleLocationSubmit}
-                        disabled={
-                            locationFormData.latitude === null ||
-                            locationFormData.longitude === null ||
-                            locationFormData.address === null
-                        }>
-                        Submit Location</Button>
-                </Stack>
-            </Modal>
-
+                onClose={handleCloseModal}
+                onSubmit={handleAddLocation}
+            />
 
             <Modal
                 opened={reviewModalOpen}
