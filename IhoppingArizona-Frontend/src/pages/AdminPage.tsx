@@ -1,78 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {Title, Text, Container, Button, Modal, Stack, NumberInput, Group, Select} from '@mantine/core';
+import React, {useState} from 'react';
+import {Title, Text, Container, Button, Group} from '@mantine/core';
 import {useAuth0} from '@auth0/auth0-react';
 import AddLocationModal from '../components/AddLocationModal.tsx';
+import AddLocationReviewModal from '../components/AddLocationReviewModal.tsx';
 
 
 const AdminPage: React.FC = () => {
     const { getAccessTokenSilently } = useAuth0();
 
-    type ReviewFormData = {
-        selectedLocationId: string,
-        locationRating: number | null;
-        atmosphereRating: number | null;
-        qualityRating: number | null;
-        costRating: number | null;
-        serviceRating: number | null;
-    };
-
-    type IhopLocationOption = {
-        id: string;
-        address: string;
-        nickname?: string;
-    };
-
-
     const [reviewModalOpen, setReviewModalOpened] = useState(false);
     const [locationModalOpen, setLocationModalOpened] = useState(false);
 
-    const [reviewFormData, setReviewFormData] = useState<ReviewFormData>({
-        selectedLocationId: '',
-        locationRating: null,
-        atmosphereRating: null,
-        qualityRating: null,
-        costRating: null,
-        serviceRating: null,
-    });
-
-    const [ihopLocations, setIhopLocations] = useState<{ value: string; label: string }[]>([]);
-
-    const fetchIhopLocations = async () => {
-        try {
-            const token = await getAccessTokenSilently();
-            const res = await fetch('http://localhost:8080/api/admin/ihopLocation/list', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (!res.ok) {
-                throw new Error(`Failed to fetch IHOP locations: ${res.statusText}`);
-            }
-
-            const data: IhopLocationOption[] = await res.json();
-
-            const options = data.map((loc) => ({
-                value: loc.id.toString(),
-                label: loc.nickname ? `${loc.nickname} (${loc.address})` : loc.address,
-            }));
-
-            setIhopLocations(options);
-        } catch (error) {
-            console.error('Error fetching IHOP locations:', error);
-        }
-    };
-
-    useEffect(() => {
-        if (reviewModalOpen) fetchIhopLocations();
-    }, [reviewModalOpen]);
-
-
-    const [reviewResponseMessage, setReviewResponseMessage] = useState('');
-
     const [createdMessage, setCreatedMessage] = useState('');
-
-    const handleReviewChange = <K extends keyof ReviewFormData>(key: K, value: ReviewFormData[K]) => {
-        setReviewFormData((prev) => ({...prev, [key]: value}));
-    };
 
     const handleAddLocation = async (location: {
         nickname: string;
@@ -103,13 +42,15 @@ const AdminPage: React.FC = () => {
         }
     };
 
-    const handleReviewSubmit = async () => {
-        const { selectedLocationId, ...ratings } = reviewFormData;
-        if (!selectedLocationId || Object.values(ratings).some(val => val === null)) {
-            setReviewResponseMessage('Please select a location and fill all ratings.');
-            return;
+    const handleAddReview = async (selectedLocationId: string,
+        review: {
+            locationRating: number;
+            atmosphereRating: number;
+            qualityRating: number;
+            costRating: number;
+            serviceRating: number;
         }
-
+    ) => {
         try {
             const token = await getAccessTokenSilently();
             const res = await fetch(`http://localhost:8080/api/admin/ihopLocation/${selectedLocationId}/review/create`, {
@@ -118,33 +59,27 @@ const AdminPage: React.FC = () => {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(reviewFormData),
+                body: JSON.stringify(review),
             });
 
             if (res.ok) {
-                setReviewResponseMessage('');
                 setCreatedMessage('Successfully Added Review for that Ihop Location!');
                 setTimeout(() => setCreatedMessage(''), 3000);
                 setReviewModalOpened(false);
-                setReviewFormData({
-                    selectedLocationId: '',
-                    locationRating: null,
-                    atmosphereRating: null,
-                    qualityRating: null,
-                    costRating: null,
-                    serviceRating: null,
-                });
             } else {
-                const data = await res.text();
-                setReviewResponseMessage(`Error: ${data}`);
+                setCreatedMessage(`Failed to Add Ihop Location Review: Error Code(${res.status})`);
             }
-        } catch (err) {
-            setReviewResponseMessage(`Request failed: ${err}`);
+        } catch {
+            setCreatedMessage(`An unexpected error occurred`);
         }
     };
 
-    const handleCloseModal = () => {
+    const handleCloseLocationModal = () => {
         setLocationModalOpened(false);
+    };
+
+    const handleCloseReviewModal = () => {
+        setReviewModalOpened(false);
     };
 
     return (
@@ -161,112 +96,15 @@ const AdminPage: React.FC = () => {
 
             <AddLocationModal
                 opened={locationModalOpen}
-                onClose={handleCloseModal}
+                onClose={handleCloseLocationModal}
                 onSubmit={handleAddLocation}
             />
 
-            <Modal
+            <AddLocationReviewModal
                 opened={reviewModalOpen}
-                onClose={() => setReviewModalOpened(false)}
-                title={
-                    <Title order={3} style={{color: "#057dc4", fontWeight: 600}}>
-                        Add a New IHOP Location Review
-                    </Title>
-                }
-                size="lg"
-                centered
-                overlayProps={{
-                    backgroundOpacity: 0.55,
-                    blur: 3,
-                }}
-                radius="md"
-            >
-                <Stack mt="md">
-                <Select label="Select IHOP Location" data={ihopLocations} value={reviewFormData.selectedLocationId} onChange={(val) => setReviewFormData({ ...reviewFormData, selectedLocationId: val! })} required />
-
-                    <Title order={5} mt="md" mb={-5}>
-                        Ratings (out of 10)
-                    </Title>
-
-                <Group grow mt="md">
-
-                    <NumberInput
-                        label="Location (Out of 3)"
-                        value={reviewFormData.locationRating as number}
-                        onChange={(value) => handleReviewChange('locationRating', value === '' || value === null ? null : Number(value))}
-                        allowDecimal={false}
-                        min={0}
-                        max={3}
-                        hideControls
-                        required
-                    />
-                    <NumberInput
-                        label="Atmosphere"
-                        value={reviewFormData.atmosphereRating as number}
-                        onChange={(value) => handleReviewChange('atmosphereRating', value === '' || value === null ? null : Number(value))}
-                        allowDecimal={false}
-                        min={0}
-                        max={10}
-                        hideControls
-                        required
-                    />
-                </Group>
-
-                <Group grow mt="md">
-                    <NumberInput
-                        label="Quality Rating"
-                        value={reviewFormData.qualityRating as number}
-                        onChange={(value) => handleReviewChange('qualityRating', value === '' || value === null ? null : Number(value))}
-                        allowDecimal={false}
-                        min={0}
-                        max={10}
-                        hideControls
-                        required
-                    />
-                    <NumberInput
-                        label="Cost Rating"
-                        value={reviewFormData.costRating as number}
-                        onChange={(value) => handleReviewChange('costRating', value === '' || value === null ? null : Number(value))}
-                        allowDecimal={false}
-                        min={0}
-                        max={10}
-                        hideControls
-                        required
-                    />
-                    <NumberInput
-                        label="Service Rating"
-                        value={reviewFormData.serviceRating as number}
-                        onChange={(value) => handleReviewChange('serviceRating', value === '' || value === null ? null : Number(value))}
-                        allowDecimal={false}
-                        min={0}
-                        max={10}
-                        hideControls
-                        required
-                    />
-                </Group>
-
-                {reviewResponseMessage && (
-                    <Text mt="md" color="blue">
-                        {reviewResponseMessage}
-                    </Text>
-                )}
-
-                <Button
-                    fullWidth
-                    color="customBlue.8"
-                    radius="md"
-                    onClick={handleReviewSubmit}
-                    disabled={
-                        reviewFormData.qualityRating === null ||
-                        reviewFormData.locationRating === null ||
-                        reviewFormData.atmosphereRating === null ||
-                        reviewFormData.selectedLocationId === null ||
-                        reviewFormData.costRating === null ||
-                        reviewFormData.serviceRating === null
-                    }>
-                    Submit Review</Button>
-                </Stack>
-            </Modal>
+                onClose={handleCloseReviewModal}
+                onSubmit={handleAddReview}
+            />
 
             {createdMessage && (
                 <Text mt="md" color="blue">
