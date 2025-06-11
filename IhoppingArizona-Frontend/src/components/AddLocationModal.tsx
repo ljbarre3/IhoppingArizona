@@ -9,7 +9,7 @@ type AddIhopModalProps = {
         address: string;
         latitude: number;
         longitude: number;
-    }) => void;
+    }) => Promise<void>;
 };
 
 export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopModalProps) {
@@ -19,8 +19,9 @@ export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopModalP
     const [longitude, setLongitude] = useState<number | ''>('');
 
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
 
         if (!address || latitude === '' || longitude === '') {
             setError('Address, Latitude, and Longitude are required.');
@@ -33,9 +34,15 @@ export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopModalP
             latitude: Number(latitude),
             longitude: Number(longitude),
         };
-        onSubmit(location);
-        resetForm()
-        onClose();
+
+        try {
+            setLoading(true);
+            return await onSubmit(location);
+        } finally {
+            setLoading(false);
+            resetForm();
+            onClose();
+        }
     };
 
     const handleClose = () => {
@@ -115,7 +122,9 @@ export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopModalP
                     color="customBlue.8"
                     radius="md"
                     onClick={handleSubmit}
+                    loading={loading}
                     disabled={
+                        loading ||
                         latitude === '' ||
                         longitude === '' ||
                         address.trim() === ''

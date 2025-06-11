@@ -40,6 +40,7 @@ const AdminPage: React.FC = () => {
         } catch {
             setCreatedMessage(`An unexpected error occurred`);
         }
+        return;
     };
 
     const handleAddReview = async (selectedLocationId: string,
@@ -72,6 +73,7 @@ const AdminPage: React.FC = () => {
         } catch {
             setCreatedMessage(`An unexpected error occurred`);
         }
+        return;
     };
 
     const handleCloseLocationModal = () => {
