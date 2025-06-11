@@ -1,10 +1,17 @@
-import {Modal, Button, Stack, Group, NumberInput, Text, Title, Select} from '@mantine/core';
-import {useEffect, useState} from "react";
-import {useAuth0} from "@auth0/auth0-react";
+import {Modal, Button, Stack, Group, NumberInput, Text, Title, TextInput} from '@mantine/core';
+import {useState} from "react";
 
 type AddIhopReviewModalProps = {
     opened: boolean;
     onClose: () => void;
+    location: {
+        id: number;
+        address: string;
+        nickname?: string;
+        latitude: number;
+        longitude: number;
+        mainReview?: object | null;
+    } | null;
     onSubmit: (selectedLocationId: string, review: {
         locationRating: number;
         atmosphereRating: number;
@@ -14,15 +21,7 @@ type AddIhopReviewModalProps = {
     }) => Promise<void>;
 };
 
-type IhopLocationOption = {
-    id: string;
-    address: string;
-    nickname?: string;
-};
-
-export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopReviewModalProps) {
-    const { getAccessTokenSilently } = useAuth0();
-    const [selectedLocationId, setSelectedLocationId] = useState<string | ''>('');
+export default function AddIhopModal({ opened, onClose, onSubmit, location}: AddIhopReviewModalProps) {
     const [locationRating, setLocationRating] = useState<number | ''>('');
     const [atmosphereRating, setAtmosphereRating] = useState<number | ''>('');
     const [qualityRating, setQualityRating] = useState<number | ''>('');
@@ -31,66 +30,21 @@ export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopReview
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [ihopLocations, setIhopLocations] = useState<{ value: string; label: string }[]>([]);
-    const [reviewedLocationIds, setReviewedLocationIds] = useState<Set<string>>(new Set());
 
-
-
-    useEffect(() => {
-        if (opened) {
-            fetchIhopLocations();
-            fetchReviewedLocationIds();
-        }
-    }, [opened]);
-
-    const fetchIhopLocations = async () => {
-        try {
-            const token = await getAccessTokenSilently();
-            const res = await fetch('http://localhost:8080/api/admin/ihopLocation/list', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (!res.ok) {
-                throw new Error(`Failed to fetch IHOP locations: ${res.statusText}`);
-            }
-
-            const data: IhopLocationOption[] = await res.json();
-
-            const options = data.map((loc) => ({
-                value: loc.id.toString(),
-                label: loc.nickname ? `${loc.nickname} (${loc.address})` : loc.address,
-            }));
-
-            setIhopLocations(options);
-        } catch (error) {
-            console.error('Error fetching IHOP locations:', error);
-        }
-    };
-
-    const fetchReviewedLocationIds = async () => {
-        try {
-            const token = await getAccessTokenSilently();
-            const res = await fetch('http://localhost:8080/api/admin/ihopLocation/list/with-main-reviews', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Failed to fetch reviewed IHOP locations');
-            const data: { id: number }[]  = await res.json();
-            const ids = new Set<string>(data.map((loc: { id: number }) => loc.id.toString()));
-            setReviewedLocationIds(ids);
-        } catch (e) {
-            console.error('Error fetching IHOP locations: ', e);
-        }
+    if (!location) {
+        return null;
     }
 
     const handleSubmit = async () => {
-        if (reviewedLocationIds.has(selectedLocationId)) {
+        if (location.mainReview) {
             setError('This IHOP already has a review. You can only add one.');
             return;
         }
         if (locationRating === '' || atmosphereRating === '' || qualityRating === '' || costRating === '' || serviceRating === '') {
-            setError('Address, Latitude, and Longitude are required.');
+            setError('All Fields are required');
             return;
         }
+
         const review = {
             locationRating: Number(locationRating),
             atmosphereRating: Number(atmosphereRating),
@@ -101,7 +55,7 @@ export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopReview
 
         try {
             setLoading(true);
-            return await onSubmit(selectedLocationId, review);
+            return await onSubmit(location.id.toString(), review);
         } finally {
             setLoading(false);
             resetForm()
@@ -141,14 +95,19 @@ export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopReview
             radius="md"
         >
             <Stack mt="md">
-                <Select label="Select IHOP Location"
-                        data={ihopLocations.map(loc => ({
-                            ...loc,
-                            disabled: reviewedLocationIds.has(loc.value)
-                        }))}
-                        value={selectedLocationId}
-                        onChange={(val) => setSelectedLocationId(val!)}
-                        required />
+                <Title order={5}>Ihop Location:</Title>
+                <TextInput
+                    label="Nickname"
+                    value={location?.nickname || 'Unnamed IHOP'}
+                    disabled
+                    readOnly
+                />
+                <TextInput
+                    label="Address"
+                    value={location?.address || ''}
+                    disabled
+                    readOnly
+                />
 
                 <Title order={5} mt="md" mb={-5}>
                     Ratings (out of 10)
@@ -228,7 +187,6 @@ export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopReview
                         qualityRating === null ||
                         locationRating === null ||
                         atmosphereRating === null ||
-                        selectedLocationId === null ||
                         costRating === null ||
                         serviceRating === null
                     }>
