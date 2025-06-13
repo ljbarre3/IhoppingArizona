@@ -3,6 +3,7 @@ import {Title, Text, Container, Button, Group, Table, Paper, ScrollArea, Stack} 
 import {useAuth0} from '@auth0/auth0-react';
 import AddLocationModal from '../components/AddLocationModal.tsx';
 import AddLocationReviewModal from '../components/LocationReviewModal.tsx';
+import {ReviewPayload} from "../Types/reviews.ts";
 
 type IhopLocation = {
     id: number;
@@ -10,7 +11,7 @@ type IhopLocation = {
     nickname?: string;
     latitude: number;
     longitude: number;
-    mainReview?: object | null;
+    mainReview?: ReviewPayload | null;
 }
 
 const AdminPage: React.FC = () => {
@@ -97,10 +98,45 @@ const AdminPage: React.FC = () => {
 
             if (res.ok) {
                 setCreatedMessage('Successfully Added Review for that Ihop Location!');
+                fetchLocations();
                 setTimeout(() => setCreatedMessage(''), 3000);
                 setReviewModalOpened(false);
             } else {
                 setCreatedMessage(`Failed to Add Ihop Location Review: Error Code(${res.status})`);
+            }
+        } catch {
+            setCreatedMessage(`An unexpected error occurred`);
+        }
+        return;
+    };
+
+    const handleEditReview = async (selectedLocationId: string,
+                                   review: {
+                                       locationRating: number;
+                                       atmosphereRating: number;
+                                       qualityRating: number;
+                                       costRating: number;
+                                       serviceRating: number;
+                                   }
+    ) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await fetch(`http://localhost:8080/api/admin/ihopLocation/${selectedLocationId}/review/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(review),
+            });
+
+            if (res.ok) {
+                setCreatedMessage('Successfully edited Review for that Ihop Location!');
+                fetchLocations();
+                setTimeout(() => setCreatedMessage(''), 3000);
+                setReviewModalOpened(false);
+            } else {
+                setCreatedMessage(`Failed to Edit Ihop Location Review: Error Code(${res.status})`);
             }
         } catch {
             setCreatedMessage(`An unexpected error occurred`);
@@ -117,13 +153,55 @@ const AdminPage: React.FC = () => {
     };
 
     const handleDeleteReview = async (locationId: number) => {
-        // TODO: Replace with actual DELETE API call
-        alert(`Delete review for location ${locationId} (not yet implemented)`);
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await fetch(`http://localhost:8080/api/admin/ihopLocation/${locationId}/review/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(locationId),
+            });
+
+            if (res.ok) {
+                setCreatedMessage('Successfully deleted Review for that Ihop Location!');
+                fetchLocations();
+                setTimeout(() => setCreatedMessage(''), 3000);
+                setReviewModalOpened(false);
+            } else {
+                setCreatedMessage(`Failed to delete Ihop Location Review: Error Code(${res.status})`);
+            }
+        } catch {
+            setCreatedMessage(`An unexpected error occurred`);
+        }
+        return;
     };
 
     const handleDeleteLocation = async (locationId: number) => {
-        // TODO: Replace with actual DELETE API call
-        alert(`Delete location ${locationId} (not yet implemented)`);
+        try {
+            const token = await getAccessTokenSilently();
+            const res = await fetch(`http://localhost:8080/api/admin/ihopLocation/delete/${locationId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(locationId),
+            });
+
+            if (res.ok) {
+                setCreatedMessage('Successfully deleted Ihop Location!');
+                fetchLocations();
+                setTimeout(() => setCreatedMessage(''), 3000);
+                setReviewModalOpened(false);
+            } else {
+                setCreatedMessage(`Failed to delete Ihop Location: Error Code(${res.status})`);
+            }
+        } catch {
+            setCreatedMessage(`An unexpected error occurred`);
+        }
+        return;
     };
 
     const rows = locations.map((loc) => (
@@ -228,8 +306,9 @@ const AdminPage: React.FC = () => {
             <AddLocationReviewModal
                 opened={reviewModalOpen}
                 onClose={handleCloseReviewModal}
-                onSubmit={handleAddReview}
+                onSubmit={selectedLocation?.mainReview ? handleEditReview : handleAddReview}
                 location={selectedLocation}
+                mode={selectedLocation?.mainReview ? 'edit' : 'add'}
             />
         </Container>
     );
