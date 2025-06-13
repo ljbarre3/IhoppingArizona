@@ -1,27 +1,24 @@
 import {Modal, Button, Stack, Group, NumberInput, Text, Title, TextInput} from '@mantine/core';
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {ReviewPayload} from "../Types/reviews.ts";
 
-type AddIhopReviewModalProps = {
+type ReviewModalProps = {
     opened: boolean;
     onClose: () => void;
+    mode: 'add' | 'edit';
     location: {
         id: number;
         address: string;
         nickname?: string;
         latitude: number;
         longitude: number;
-        mainReview?: object | null;
+        mainReview?: ReviewPayload | null;
     } | null;
-    onSubmit: (selectedLocationId: string, review: {
-        locationRating: number;
-        atmosphereRating: number;
-        qualityRating: number;
-        costRating: number;
-        serviceRating: number;
-    }) => Promise<void>;
+    onSubmit: (selectedLocationId: string, review: ReviewPayload) => Promise<void>;
 };
 
-export default function AddIhopModal({ opened, onClose, onSubmit, location}: AddIhopReviewModalProps) {
+export default function ReviewModal({ opened, onClose, onSubmit, location, mode}: ReviewModalProps) {
+    const [originalReview, setOriginalReview] = useState<ReviewPayload | null>(null);
     const [locationRating, setLocationRating] = useState<number | ''>('');
     const [atmosphereRating, setAtmosphereRating] = useState<number | ''>('');
     const [qualityRating, setQualityRating] = useState<number | ''>('');
@@ -31,15 +28,28 @@ export default function AddIhopModal({ opened, onClose, onSubmit, location}: Add
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        if (opened && mode === 'edit' && location?.mainReview) {
+            setOriginalReview(location.mainReview);
+            setLocationRating(location.mainReview.locationRating);
+            setAtmosphereRating(location.mainReview.atmosphereRating);
+            setQualityRating(location.mainReview.qualityRating);
+            setCostRating(location.mainReview.costRating);
+            setServiceRating(location.mainReview.serviceRating);
+        } else if (opened && mode === 'add') {
+            resetForm();
+        }
+    }, [opened, mode, location]);
+
     if (!location) {
         return null;
     }
 
     const handleSubmit = async () => {
-        if (location.mainReview) {
-            setError('This IHOP already has a review. You can only add one.');
-            return;
+        if (mode === 'add' && location.mainReview) {
+            setError("This IHOP already has a review. You can only add one");
         }
+
         if (locationRating === '' || atmosphereRating === '' || qualityRating === '' || costRating === '' || serviceRating === '') {
             setError('All Fields are required');
             return;
@@ -69,6 +79,7 @@ export default function AddIhopModal({ opened, onClose, onSubmit, location}: Add
     };
 
     const resetForm = () => {
+        setOriginalReview(null);
         setLocationRating('');
         setAtmosphereRating('');
         setQualityRating('');
@@ -77,15 +88,27 @@ export default function AddIhopModal({ opened, onClose, onSubmit, location}: Add
         setError(null);
     }
 
+    const hasChanges = (): boolean => {
+        if (mode === 'add') return true; // always allow adding
+        if (!originalReview) return true;
+
+        return (
+            originalReview.locationRating !== Number(locationRating) ||
+            originalReview.atmosphereRating !== Number(atmosphereRating) ||
+            originalReview.qualityRating !== Number(qualityRating) ||
+            originalReview.costRating !== Number(costRating) ||
+            originalReview.serviceRating !== Number(serviceRating)
+        );
+    };
+
     return (
         <Modal
             opened={opened}
             onClose={handleClose}
-            title={
-                <Title order={3} style={{color: "#057dc4", fontWeight: 600}}>
-                    Add a New IHOP Location Review
-                </Title>
-            }
+            title = {
+            <Text fz="lg" fw={600} style={{color: "#057dc4"}}>
+                {mode === 'add' ? 'Add a New IHOP Review' : 'Edit IHOP Review'}
+            </Text>}
             size="lg"
             centered
             overlayProps={{
@@ -188,9 +211,10 @@ export default function AddIhopModal({ opened, onClose, onSubmit, location}: Add
                         locationRating === null ||
                         atmosphereRating === null ||
                         costRating === null ||
-                        serviceRating === null
+                        serviceRating === null ||
+                        !hasChanges()
                     }>
-                    Submit Review</Button>
+                    {mode === 'add' ? 'Submit Review' : 'Update Review'}</Button>
             </Stack>
         </Modal>
     );
