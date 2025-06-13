@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Title, Text, Container, Button, Group, Table, Paper, ScrollArea, Stack} from '@mantine/core';
 import {useAuth0} from '@auth0/auth0-react';
 import AddLocationModal from '../components/AddLocationModal.tsx';
-import AddLocationReviewModal from '../components/AddLocationReviewModal.tsx';
+import AddLocationReviewModal from '../components/LocationReviewModal.tsx';
 
 type IhopLocation = {
     id: number;
