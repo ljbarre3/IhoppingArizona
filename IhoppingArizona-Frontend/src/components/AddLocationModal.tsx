@@ -62,12 +62,12 @@ export default function AddIhopModal({ opened, onClose, onSubmit}: AddIhopModalP
         <Modal
             opened={opened}
             onClose={handleClose}
-            title={
-                <div style={{color: '#057dc4', fontWeight: 600}}>
-                    Add a New IHOP Location
-                </div>
-            }
             size="lg"
+            title = {
+                <Text fz='lg' fw={600} style={{color: '#057dc4'}}>
+                    Add a New IHOP Location
+                </Text>
+            }
             centered
             overlayProps={{
                 backgroundOpacity: 0.55,
