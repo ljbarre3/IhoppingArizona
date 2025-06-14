@@ -4,6 +4,7 @@ import {useAuth0} from '@auth0/auth0-react';
 import AddLocationModal from '../components/AddLocationModal.tsx';
 import AddLocationReviewModal from '../components/LocationReviewModal.tsx';
 import {ReviewPayload} from "../Types/reviews.ts";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal.tsx";
 
 type IhopLocation = {
     id: number;
@@ -20,6 +21,10 @@ const AdminPage: React.FC = () => {
     const [reviewModalOpen, setReviewModalOpened] = useState(false);
     const [locationModalOpen, setLocationModalOpened] = useState(false);
     const [createdMessage, setCreatedMessage] = useState('');
+
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<IhopLocation | null>(null);
+    const [deleteType, setDeleteType] = useState<'review' | 'location' | null>(null);
 
 
     const [locations, setLocations] = useState<IhopLocation[]>([]);
@@ -204,6 +209,21 @@ const AdminPage: React.FC = () => {
         return;
     };
 
+    const handleConfirmedDelete = async () => {
+        if (!deleteTarget || !deleteType)
+            return;
+
+        if (deleteType === 'location') {
+            await handleDeleteLocation(deleteTarget.id)
+        } else if (deleteType === 'review') {
+            await handleDeleteReview(deleteTarget.id)
+        }
+
+        setDeleteModalOpen(false);
+        setDeleteType(null);
+        setDeleteTarget(null)
+    }
+
     const rows = locations.map((loc) => (
         <Table.Tr key={loc.id} bg="transparent">
             <Table.Td
@@ -249,10 +269,29 @@ const AdminPage: React.FC = () => {
                     <Button size="xs" onClick={() => { setSelectedLocation(loc); setReviewModalOpened(true); }}>
                         {loc.mainReview ? 'Edit Review' : 'Add Review'}
                     </Button>
-                    <Button size="xs" color="yellow" onClick={() => handleDeleteReview(loc.id)}>
-                        Delete Review
+                    <Button
+                        style={{
+                            backgroundColor: '#FFD43B',
+                            color: 'black',
+                            opacity: loc.mainReview ? 1 : 0.5,
+                            pointerEvents: loc.mainReview ? 'auto' : 'none',
+                            cursor: loc.mainReview ? 'pointer' : 'not-allowed',
+                        }}
+                        size="xs"
+                        color="yellow"
+                        onClick={() => {
+                            if (!loc.mainReview) return;
+                            setDeleteType('review');
+                            setDeleteTarget(loc)
+                            setDeleteModalOpen(true);
+                        }}>
+                            Delete Review
                     </Button>
-                    <Button size="xs" color="red" onClick={() => handleDeleteLocation(loc.id)}>
+                    <Button size="xs" color="red" onClick={() => {
+                        setDeleteTarget(loc);
+                        setDeleteType('location')
+                        setDeleteModalOpen(true);
+                    }}>
                         Delete Location
                     </Button>
                 </Stack>
@@ -310,6 +349,13 @@ const AdminPage: React.FC = () => {
                 location={selectedLocation}
                 mode={selectedLocation?.mainReview ? 'edit' : 'add'}
             />
+
+            <ConfirmDeleteModal
+                opened={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={() => {handleConfirmedDelete()}}
+                resourceLabel= {deleteType === 'location' ? 'ihop Location' : 'review'}
+                />
         </Container>
     );
 };
