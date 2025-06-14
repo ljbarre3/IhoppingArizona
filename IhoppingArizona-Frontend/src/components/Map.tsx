@@ -1,7 +1,9 @@
 import {APIProvider, Map, AdvancedMarker} from '@vis.gl/react-google-maps';
-import {Button, Container, Paper, Title, Text} from "@mantine/core";
-import { useState, useEffect } from "react";
+import {Button, Container, Paper, Title, Text, Progress} from "@mantine/core";
+// @ts-expect-error Error is needed for future development.
+import {useState, useEffect, JSX} from "react";
 import PancakeReview from '../components/PancakeReview';
+// @ts-expect-error Error is needed for future development.
 import {FinalPancakeStack} from '../components/FinalPancakeStack';
 
 const ihopMarkerIcon = "/src/assets/icons8-pancake-stack-48.png";
@@ -62,6 +64,7 @@ export default function GoogleMap() {
     const [ihopLocations, setIhopLocations] = useState<IhopLocation[]>([]);
     const [selectedIhopLocation, setSelectedIhopLocation] = useState<IhopLocation | null>(null);
 
+
     useEffect(() => {
         const fetchLocations = async () => {
             try {
@@ -84,6 +87,47 @@ export default function GoogleMap() {
 
         fetchLocations();
     }, []);
+
+    {/*function getFinalPancakeEmoji (percent: number) : JSX.Element {
+        switch (true) {
+            case percent < 25:
+                return <img src="/src/assets/25percent.svg" alt={"Sad Pancake"} height={32} />;
+            case percent < 50:
+                return <img src="/src/assets/50percent.svg" alt={"Neutral Pancake"} height={32}/>;
+            case percent < 75:
+                return <img src="/src/assets/75percent.svg" alt={"Good Pancake"} height={32}/>;
+            case percent < 90:
+                return <img src="/src/assets/90percent.svg" alt={"Better Pancake"} height={32}/>;
+            default:
+                return <img src="/src/assets/BestPancake.svg" alt={"Best Pancake"} height={32}/>;
+        }
+    }*/}
+
+    const renderSyrupScore = () => {
+        if (!selectedIhopLocation || !selectedIhopLocation.mainReview) return null;
+        const percent = Math.round((selectedIhopLocation.mainReview.finalScore / 43) * 100);
+
+        return (
+            <div style={{ position: 'relative', width: '100%' }}>
+            <Progress
+                size="lg"
+                value = {Math.round((selectedIhopLocation.mainReview.finalScore / 43) * 100)}
+                color={"#eca24d"}>
+            </Progress>
+            <img
+                src="/src/assets/maple-syrup.png"
+                alt="Syrup Bottle"
+                style = {{
+                    position: "absolute",
+                    top: '-8px',
+                    height: '24px',
+                    left: `calc(${percent}% - 12px)`,
+                    transition: 'left 0.3s ease',
+                }}
+            />
+        </div>
+        )
+    }
 
     return (
         <Container size="xl" my="xl" style={{ display: "flex", justifyContent: "center" }}>
@@ -118,11 +162,13 @@ export default function GoogleMap() {
                         <Paper p="lg">
                             <Text fw={700} fz="lg">{selectedIhopLocation?.address}</Text>
                             <Text fz="sm" c="dimmed" mb="md">{selectedIhopLocation?.nickname || 'Unnamed Location'}</Text>
-
                             {selectedIhopLocation?.mainReview ? (
                                 <>
                                     <Title order={4} mb="xs">Overall Score: {`${Math.round((selectedIhopLocation.mainReview.finalScore / 43) * 100)}%`} ({selectedIhopLocation.mainReview.finalScore}/43)</Title>
-                                    <FinalPancakeStack finalScore={selectedIhopLocation.mainReview.finalScore}></FinalPancakeStack>
+
+                                    {renderSyrupScore()}
+                                    {/*<FinalPancakeStack finalScore={selectedIhopLocation.mainReview.finalScore}></FinalPancakeStack> */}
+
                                     {[
                                         { label: "Location", value: selectedIhopLocation.mainReview.locationRating, max: 3 },
                                         { label: "Atmosphere", value: selectedIhopLocation.mainReview.atmosphereRating },
@@ -131,7 +177,7 @@ export default function GoogleMap() {
                                         { label: "Service", value: selectedIhopLocation.mainReview.serviceRating },
                                     ].map(({ label, value, max = 10 }) => (
                                         <div key={label} style={{ marginBottom: 16 }}>
-                                            <Text fw={600}>{label}</Text>
+                                            <Text fw={600}>{label} ({value}/{max})</Text>
                                             <PancakeReview count={value} max={max} size={30} />
                                         </div>
                                     ))}
