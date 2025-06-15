@@ -6,6 +6,7 @@ import {Auth0Provider} from "@auth0/auth0-react";
 import {BrowserRouter} from "react-router-dom";
 import '@mantine/core/styles.css';
 import "./styles/background.pcss";
+import '@mantine/tiptap/styles.css';
 
 const theme = createTheme({
     colors: {

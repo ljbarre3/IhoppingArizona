@@ -88,6 +88,7 @@ const AdminPage: React.FC = () => {
             qualityRating: number;
             costRating: number;
             serviceRating: number;
+            notesHtml: string;
         }
     ) => {
         try {
@@ -122,6 +123,7 @@ const AdminPage: React.FC = () => {
                                        qualityRating: number;
                                        costRating: number;
                                        serviceRating: number;
+                                       notesHtml: string;
                                    }
     ) => {
         try {

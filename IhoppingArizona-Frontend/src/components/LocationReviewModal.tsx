@@ -1,6 +1,11 @@
 import {Modal, Button, Stack, Group, NumberInput, Text, Title, TextInput} from '@mantine/core';
 import {useEffect, useState} from "react";
 import {ReviewPayload} from "../Types/reviews.ts";
+import { RichTextEditor} from "@mantine/tiptap";
+import { useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
+import Highlight from '@tiptap/extension-highlight';
 
 type ReviewModalProps = {
     opened: boolean;
@@ -24,9 +29,20 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
     const [qualityRating, setQualityRating] = useState<number | ''>('');
     const [costRating, setCostRating] = useState<number | ''>('');
     const [serviceRating, setServiceRating] = useState<number | ''>('');
+    const [notes, setNotes] = useState<string>('');
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const editor = useEditor({
+        extensions: [StarterKit, Underline, Highlight],
+        content: '',
+        onUpdate: ({ editor }) => {
+            const html = editor.getHTML();
+            console.log('Saved HTML:', html);
+            setNotes(editor.getHTML());
+        },
+    });
 
     useEffect(() => {
         if (opened && mode === 'edit' && location?.mainReview) {
@@ -36,10 +52,17 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
             setQualityRating(location.mainReview.qualityRating);
             setCostRating(location.mainReview.costRating);
             setServiceRating(location.mainReview.serviceRating);
+            setNotes(location.mainReview.notesHtml ?? '');
         } else if (opened && mode === 'add') {
             resetForm();
         }
-    }, [opened, mode, location]);
+        if (opened && editor) {
+            const initialContent = mode === 'edit' && location?.mainReview?.notesHtml
+                ? location.mainReview.notesHtml
+                : '';
+            editor.commands.setContent(initialContent);
+        }
+    }, [opened, editor, mode, location]);
 
     if (!location) {
         return null;
@@ -61,6 +84,7 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
             qualityRating: Number(qualityRating),
             costRating: Number(costRating),
             serviceRating: Number(serviceRating),
+            notesHtml: notes,
         };
 
         try {
@@ -85,6 +109,7 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
         setQualityRating('');
         setCostRating('');
         setServiceRating('');
+        setNotes('');
         setError(null);
     }
 
@@ -97,7 +122,8 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
             originalReview.atmosphereRating !== Number(atmosphereRating) ||
             originalReview.qualityRating !== Number(qualityRating) ||
             originalReview.costRating !== Number(costRating) ||
-            originalReview.serviceRating !== Number(serviceRating)
+            originalReview.serviceRating !== Number(serviceRating) ||
+            originalReview?.notesHtml !== notes
         );
     };
 
@@ -193,6 +219,22 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
                     />
                 </Group>
 
+                <Title order={5} mt="lg">Notes</Title>
+                <RichTextEditor editor={editor} variant="subtle">
+                    <RichTextEditor.Toolbar sticky stickyOffset="var(--docs-header-height)">
+                        <RichTextEditor.ControlsGroup>
+                            <RichTextEditor.Bold />
+                            <RichTextEditor.Italic />
+                            <RichTextEditor.Underline />
+                            <RichTextEditor.Strikethrough />
+                            <RichTextEditor.ClearFormatting />
+                            <RichTextEditor.Highlight />
+                        </RichTextEditor.ControlsGroup>
+                    </RichTextEditor.Toolbar>
+
+                    <RichTextEditor.Content style={{ minHeight: 100 }}/>
+                </RichTextEditor>
+
                 {error && (
                     <Text mt="md" color="blue">
                         {error}
@@ -212,6 +254,7 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
                         atmosphereRating === null ||
                         costRating === null ||
                         serviceRating === null ||
+                        notes === null ||
                         !hasChanges()
                     }>
                     {mode === 'add' ? 'Submit Review' : 'Update Review'}</Button>

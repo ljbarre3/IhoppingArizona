@@ -5,6 +5,7 @@ import {useState, useEffect, JSX} from "react";
 import PancakeReview from '../components/PancakeReview';
 // @ts-expect-error Error is needed for future development.
 import {FinalPancakeStack} from '../components/FinalPancakeStack';
+import DOMPurify from 'dompurify'
 
 const ihopMarkerIcon = "/src/assets/icons8-pancake-stack-48.png";
 
@@ -58,6 +59,7 @@ type MainReview = {
     costRating: number;
     serviceRating: number;
     finalScore: number;
+    notesHtml: string;
 }
 
 export default function GoogleMap() {
@@ -129,6 +131,10 @@ export default function GoogleMap() {
         )
     }
 
+    function cleanData(dirtyHtml: string) {
+        return DOMPurify.sanitize(dirtyHtml)
+    }
+
     return (
         <Container size="xl" my="xl" style={{ display: "flex", justifyContent: "center" }}>
             <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
@@ -181,6 +187,19 @@ export default function GoogleMap() {
                                             <PancakeReview count={value} max={max} size={30} />
                                         </div>
                                     ))}
+                                    <Title order={5} mt="md">Notes</Title>
+                                    <div
+                                        dangerouslySetInnerHTML={{
+                                            __html: cleanData(selectedIhopLocation.mainReview.notesHtml)
+                                        }}
+                                        style={{
+                                            backgroundColor: '#f8f8f8',
+                                            padding: '12px',
+                                            borderRadius: '8px',
+                                            whiteSpace: 'pre-wrap',
+                                            overflowWrap: 'break-word',
+                                        }}
+                                    />
                                 </>
                             ) : (
                                 <Text c="gray">No review yet for this location.</Text>

@@ -4,4 +4,5 @@ export type ReviewPayload = {
     qualityRating: number;
     costRating: number;
     serviceRating: number;
+    notesHtml: string;
 }
