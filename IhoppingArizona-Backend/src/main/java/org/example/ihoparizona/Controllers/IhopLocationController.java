@@ -53,7 +53,8 @@ public class IhopLocationController {
                                 loc.getMainReview().getQualityRating(),
                                 loc.getMainReview().getServiceRating(),
                                 loc.getMainReview().getCostRating(),
-                                loc.getMainReview().getFinalScore()
+                                loc.getMainReview().getFinalScore(),
+                                loc.getMainReview().getNotesHtml()
                         ) : null
                 ))
                 .toList();

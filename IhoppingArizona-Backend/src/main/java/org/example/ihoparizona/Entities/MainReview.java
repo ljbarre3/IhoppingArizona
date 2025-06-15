@@ -32,6 +32,9 @@ public class MainReview {
 
     private double finalScore; // Final calculated score
 
+    @Column(columnDefinition = "TEXT")
+    private String notesHtml;
+
     @OneToOne
     @JoinColumn(name = "ihop_location_id", nullable = false, unique = true)
     @JsonBackReference

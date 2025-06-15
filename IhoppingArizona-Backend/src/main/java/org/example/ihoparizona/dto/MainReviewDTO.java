@@ -6,5 +6,6 @@ public record MainReviewDTO(
         int costRating,
         int qualityRating,
         int serviceRating,
-        double finalScore
+        double finalScore,
+        String notesHtml
 ) {}
