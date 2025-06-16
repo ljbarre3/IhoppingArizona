@@ -27,6 +27,14 @@ public class MainReviewService {
         return mainReviewRepository.findById(id);
     }
 
+    @Transactional
+    public void setReviewImageUrl(Long locationId, String imageUrl) {
+        MainReview review = mainReviewRepository.findByLocationId(locationId)
+                .orElseThrow(() -> new RuntimeException("MainReview not found"));
+        review.setImageUrl(imageUrl);
+        mainReviewRepository.save(review);
+    }
+
     //CREATE
 
     public MainReview createMainReview(MainReview mainReview) {
@@ -45,7 +53,7 @@ public class MainReviewService {
             existing.setQualityRating(updatedMainReview.getQualityRating());
             existing.setCostRating(updatedMainReview.getCostRating());
             existing.setServiceRating(updatedMainReview.getServiceRating());
-            existing.setFinalScore(updatedMainReview.getFinalScore());
+            existing.setNotesHtml(updatedMainReview.getNotesHtml());
             calculateFinalScore(existing);
 
             IhopLocation location = existing.getLocation();

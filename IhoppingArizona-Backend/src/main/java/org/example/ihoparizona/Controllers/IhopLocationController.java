@@ -13,6 +13,12 @@ import org.example.ihoparizona.dto.MainReviewDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +60,8 @@ public class IhopLocationController {
                                 loc.getMainReview().getServiceRating(),
                                 loc.getMainReview().getCostRating(),
                                 loc.getMainReview().getFinalScore(),
-                                loc.getMainReview().getNotesHtml()
+                                loc.getMainReview().getNotesHtml(),
+                                loc.getMainReview().getImageUrl()
                         ) : null
                 ))
                 .toList();
@@ -111,6 +118,26 @@ public class IhopLocationController {
 
         MainReview saved = mainReviewService.createMainReview(mainReview);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/review/{id}/upload-image")
+    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            String fileName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+            Path uploadPath = Paths.get("uploads");
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            String imageUrl = "/uploads/" + fileName;
+            mainReviewService.setReviewImageUrl(id, imageUrl);
+
+            return ResponseEntity.ok(imageUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Image upload failed.");
+        }
     }
 
     @PutMapping("/{id}/review/update")

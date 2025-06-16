@@ -24,6 +24,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/public", "/api/admin/ihopLocation/list/with-main-reviews").permitAll()       // no authentication
                         .requestMatchers("/api/admin/**").authenticated()    // must be an user role
                         .anyRequest().denyAll()

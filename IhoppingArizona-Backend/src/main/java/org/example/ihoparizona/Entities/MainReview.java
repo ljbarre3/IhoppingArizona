@@ -35,6 +35,9 @@ public class MainReview {
     @Column(columnDefinition = "TEXT")
     private String notesHtml;
 
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
+
     @OneToOne
     @JoinColumn(name = "ihop_location_id", nullable = false, unique = true)
     @JsonBackReference
