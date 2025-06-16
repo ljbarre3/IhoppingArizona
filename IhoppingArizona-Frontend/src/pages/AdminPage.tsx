@@ -124,6 +124,7 @@ const AdminPage: React.FC = () => {
                                        costRating: number;
                                        serviceRating: number;
                                        notesHtml: string;
+                                       imageUrl: string;
                                    }
     ) => {
         try {
@@ -134,9 +135,9 @@ const AdminPage: React.FC = () => {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
+
                 body: JSON.stringify(review),
             });
-
             if (res.ok) {
                 setCreatedMessage('Successfully edited Review for that Ihop Location!');
                 fetchLocations();

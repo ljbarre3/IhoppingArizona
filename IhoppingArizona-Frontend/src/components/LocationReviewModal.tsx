@@ -6,6 +6,8 @@ import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Highlight from '@tiptap/extension-highlight';
+import { FileInput } from '@mantine/core';
+import {useAuth0} from "@auth0/auth0-react";
 
 type ReviewModalProps = {
     opened: boolean;
@@ -23,6 +25,8 @@ type ReviewModalProps = {
 };
 
 export default function ReviewModal({ opened, onClose, onSubmit, location, mode}: ReviewModalProps) {
+    const { getAccessTokenSilently } = useAuth0();
+    
     const [originalReview, setOriginalReview] = useState<ReviewPayload | null>(null);
     const [locationRating, setLocationRating] = useState<number | ''>('');
     const [atmosphereRating, setAtmosphereRating] = useState<number | ''>('');
@@ -30,6 +34,7 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
     const [costRating, setCostRating] = useState<number | ''>('');
     const [serviceRating, setServiceRating] = useState<number | ''>('');
     const [notes, setNotes] = useState<string>('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -38,13 +43,13 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
         extensions: [StarterKit, Underline, Highlight],
         content: '',
         onUpdate: ({ editor }) => {
-            const html = editor.getHTML();
-            console.log('Saved HTML:', html);
             setNotes(editor.getHTML());
         },
     });
 
     useEffect(() => {
+        if(!opened || !editor) return;
+
         if (opened && mode === 'edit' && location?.mainReview) {
             setOriginalReview(location.mainReview);
             setLocationRating(location.mainReview.locationRating);
@@ -53,14 +58,16 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
             setCostRating(location.mainReview.costRating);
             setServiceRating(location.mainReview.serviceRating);
             setNotes(location.mainReview.notesHtml ?? '');
-        } else if (opened && mode === 'add') {
-            resetForm();
+            if (location.mainReview.imageFile) {
+                setImageFile(location.mainReview.imageFile);
+            }
+
+
+            editor.commands.setContent(location.mainReview.notesHtml ?? '');
         }
-        if (opened && editor) {
-            const initialContent = mode === 'edit' && location?.mainReview?.notesHtml
-                ? location.mainReview.notesHtml
-                : '';
-            editor.commands.setContent(initialContent);
+        if (mode === 'add') {
+            resetForm();
+            editor.commands.setContent('');
         }
     }, [opened, editor, mode, location]);
 
@@ -89,7 +96,19 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
 
         try {
             setLoading(true);
-            return await onSubmit(location.id.toString(), review);
+            await onSubmit(location.id.toString(), review);
+            if (imageFile) {
+                const token = await getAccessTokenSilently();
+                const formData = new FormData();
+                formData.append('file', imageFile);
+                await fetch(`http://localhost:8080/api/admin/ihopLocation/review/${location.id}/upload-image`, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: formData,
+                });
+            }
         } finally {
             setLoading(false);
             resetForm()
@@ -110,6 +129,7 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
         setCostRating('');
         setServiceRating('');
         setNotes('');
+        setImageFile(null);
         setError(null);
     }
 
@@ -117,13 +137,16 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
         if (mode === 'add') return true; // always allow adding
         if (!originalReview) return true;
 
+        const imageFileChanged = !!imageFile && originalReview.imageFile?.name !== `/uploads/${imageFile.name}`;
+
         return (
             originalReview.locationRating !== Number(locationRating) ||
             originalReview.atmosphereRating !== Number(atmosphereRating) ||
             originalReview.qualityRating !== Number(qualityRating) ||
             originalReview.costRating !== Number(costRating) ||
             originalReview.serviceRating !== Number(serviceRating) ||
-            originalReview?.notesHtml !== notes
+            originalReview?.notesHtml !== notes ||
+            imageFileChanged
         );
     };
 
@@ -234,6 +257,13 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
 
                     <RichTextEditor.Content style={{ minHeight: 100 }}/>
                 </RichTextEditor>
+
+                <FileInput
+                    label="Upload Ihop Location Image:"
+                    placeholder="Choose image"
+                    accept="image/*"
+                    onChange={(file) => setImageFile(file)}
+                />
 
                 {error && (
                     <Text mt="md" color="blue">

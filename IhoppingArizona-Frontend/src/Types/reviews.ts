@@ -5,4 +5,5 @@ export type ReviewPayload = {
     costRating: number;
     serviceRating: number;
     notesHtml: string;
+    imageFile?: File;
 }

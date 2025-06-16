@@ -1,5 +1,5 @@
 import {APIProvider, Map, AdvancedMarker} from '@vis.gl/react-google-maps';
-import {Button, Container, Paper, Title, Text, Progress} from "@mantine/core";
+import {Button, Container, Title, Text, Progress, ScrollArea, Box} from "@mantine/core";
 // @ts-expect-error Error is needed for future development.
 import {useState, useEffect, JSX} from "react";
 import PancakeReview from '../components/PancakeReview';
@@ -25,17 +25,7 @@ const mapContainerStyle: React.CSSProperties = {
 };
 
 const sidebarStyle: React.CSSProperties = {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    width: "50%",
-    height: "100%",
-    backgroundColor: "#ffffff",
-    padding: "20px",
-    boxShadow: "-2px 0px 10px rgba(0, 0, 0, 0.1)",
-    zIndex: 10,
-    transition: "transform 0.3s ease-in-out",
-    transform: "translateX(100%)",
+
 };
 
 const center = {
@@ -60,6 +50,7 @@ type MainReview = {
     serviceRating: number;
     finalScore: number;
     notesHtml: string;
+    imageUrl: string;
 }
 
 export default function GoogleMap() {
@@ -110,7 +101,7 @@ export default function GoogleMap() {
         const percent = Math.round((selectedIhopLocation.mainReview.finalScore / 43) * 100);
 
         return (
-            <div style={{ position: 'relative', width: '100%' }}>
+            <div style={{ position: 'relative', width: '95%' }}>
             <Progress
                 size="lg"
                 value = {Math.round((selectedIhopLocation.mainReview.finalScore / 43) * 100)}
@@ -158,23 +149,47 @@ export default function GoogleMap() {
                             </AdvancedMarker>
                         ))}
                     </Map>
-
-                    <div
-                        style={{
-                            ...sidebarStyle,
-                            transform: selectedIhopLocation ? "translateX(0%)" : "translateX(100%)"
-                        }}
-                    >
-                        <Paper p="lg">
+                        <Box p="lg"
+                             style={{
+                                 position: "absolute",
+                                 top: 0,
+                                 right: 0,
+                                 width: "50%",
+                                 height: "96%",
+                                 backgroundColor: "#ffffff",
+                                 boxShadow: "-2px 0px 10px rgba(0, 0, 0, 0.1)",
+                                 zIndex: 10,
+                                 display: "flex",
+                                 flexDirection: "column",
+                                 transition: "transform 0.3s ease-in-out",
+                                 transform: selectedIhopLocation ? "translateX(0%)" : "translateX(100%)",
+                             }}
+                        >
+                            <ScrollArea style={{ flex: 1 }}>
+                            {selectedIhopLocation?.mainReview?.imageUrl && (
+                                <div style={{ position: 'relative', marginBottom: "1rem" }}>
+                                    <img
+                                        src={`http://localhost:8080${selectedIhopLocation.mainReview.imageUrl}`}
+                                        alt="IHOP Review"
+                                        style={{
+                                            width: '100%',
+                                            height: '28rem',
+                                            objectFit: 'cover',
+                                            borderRadius: '.5rem',
+                                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                                        }}
+                                    />
+                                </div>
+                            )}
                             <Text fw={700} fz="lg">{selectedIhopLocation?.address}</Text>
                             <Text fz="sm" c="dimmed" mb="md">{selectedIhopLocation?.nickname || 'Unnamed Location'}</Text>
                             {selectedIhopLocation?.mainReview ? (
                                 <>
                                     <Title order={4} mb="xs">Overall Score: {`${Math.round((selectedIhopLocation.mainReview.finalScore / 43) * 100)}%`} ({selectedIhopLocation.mainReview.finalScore}/43)</Title>
-
-                                    {renderSyrupScore()}
-                                    {/*<FinalPancakeStack finalScore={selectedIhopLocation.mainReview.finalScore}></FinalPancakeStack> */}
-
+                                    <div style={{ marginBottom: "1rem" }}>
+                                        {renderSyrupScore()}
+                                        {/*<FinalPancakeStack finalScore={selectedIhopLocation.mainReview.finalScore}></FinalPancakeStack> */}
+                                    </div>
                                     {[
                                         { label: "Location", value: selectedIhopLocation.mainReview.locationRating, max: 3 },
                                         { label: "Atmosphere", value: selectedIhopLocation.mainReview.atmosphereRating },
@@ -182,7 +197,7 @@ export default function GoogleMap() {
                                         { label: "Cost", value: selectedIhopLocation.mainReview.costRating },
                                         { label: "Service", value: selectedIhopLocation.mainReview.serviceRating },
                                     ].map(({ label, value, max = 10 }) => (
-                                        <div key={label} style={{ marginBottom: 16 }}>
+                                        <div key={label} style={{ marginBottom: "1rem" }}>
                                             <Text fw={600}>{label} ({value}/{max})</Text>
                                             <PancakeReview count={value} max={max} size={30} />
                                         </div>
@@ -193,9 +208,10 @@ export default function GoogleMap() {
                                             __html: cleanData(selectedIhopLocation.mainReview.notesHtml)
                                         }}
                                         style={{
+                                            width: '95%',
                                             backgroundColor: '#f8f8f8',
-                                            padding: '12px',
-                                            borderRadius: '8px',
+                                            padding: '.75rem',
+                                            borderRadius: '.5rem',
                                             whiteSpace: 'pre-wrap',
                                             overflowWrap: 'break-word',
                                         }}
@@ -205,11 +221,11 @@ export default function GoogleMap() {
                                 <Text c="gray">No review yet for this location.</Text>
                             )}
 
-                            <Button onClick={() => setSelectedIhopLocation(null)} color="red" fullWidth mt="xl">
-                                Close
-                            </Button>
-                        </Paper>
-                    </div>
+                                <Button onClick={() => setSelectedIhopLocation(null)} color="red" fullWidth mt="xl">
+                                    Close
+                                </Button>
+                            </ScrollArea>
+                        </Box>
                 </div>
             </APIProvider>
         </Container>
