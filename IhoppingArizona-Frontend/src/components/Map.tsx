@@ -13,7 +13,7 @@ const ihopMarkerIcon = "/src/assets/icons8-pancake-stack-48.png";
 
 const mapWrapperStyle: React.CSSProperties = {
     width: "100%",
-    height: "800px",
+    height: "50Rem",
     position: "relative",
     overflow: "hidden",
     paddingBottom: "2rem",
@@ -22,10 +22,6 @@ const mapWrapperStyle: React.CSSProperties = {
 const mapContainerStyle: React.CSSProperties = {
     width: "100%",
     height: "100%",
-};
-
-const sidebarStyle: React.CSSProperties = {
-
 };
 
 const center = {
