@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage.tsx";
 import {Route, Routes } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute.tsx";
+import AboutJourneyPage from "./pages/AboutJourneyPage.tsx";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
                   </PrivateRoute>}
               />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/OurJourney" element={<AboutJourneyPage />} />
           </Routes>
       </>
   )

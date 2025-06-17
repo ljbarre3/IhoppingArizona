@@ -124,7 +124,6 @@ const AdminPage: React.FC = () => {
                                        costRating: number;
                                        serviceRating: number;
                                        notesHtml: string;
-                                       imageUrl: string;
                                    }
     ) => {
         try {
