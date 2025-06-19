@@ -1,6 +1,6 @@
 import React from 'react';
 // @ts-ignore
-import PancakeIcon from "/Pancake-Stack.svg?react";
+import PancakeIcon from "../assets/Pancake-Stack.svg?react";
 
 type PancakeStackProps = {
     count: number; // how many pancakes to show
