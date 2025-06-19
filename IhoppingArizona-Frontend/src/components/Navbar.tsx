@@ -13,10 +13,12 @@ export default function Navbar() {
                 <Link to="/" style={{ textDecoration: 'none' }}>
                     <Button style={{ color: theme.colors.customBlue[8] }} variant="subtle">Map</Button>
                 </Link>
-                <Link to="/OurJourney" style={{ textDecoration: 'none' }}>
+                <Link to="/Our-Journey" style={{ textDecoration: 'none' }}>
                     <Button style={{ color: theme.colors.customBlue[8] }} variant="subtle">About Our Journey</Button>
                 </Link>
-                <Button style={{ color: theme.colors.customBlue[8] }} variant="subtle">Contact Us</Button>
+                <Link to="/Contact-Us" style={{ textDecoration: 'none' }}>
+                    <Button style={{ color: theme.colors.customBlue[8] }} variant="subtle">Contact Us</Button>
+                </Link>
             </Group>
         </Container>
     );

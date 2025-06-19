@@ -152,7 +152,7 @@ export default function GoogleMap() {
                                  right: 0,
                                  width: "50%",
                                  height: "96%",
-                                 backgroundColor: "#ffffff",
+                                 backgroundColor: "#FAF9F6",
                                  boxShadow: "-2px 0px 10px rgba(0, 0, 0, 0.1)",
                                  zIndex: 10,
                                  display: "flex",

@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import {Route, Routes } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute.tsx";
 import AboutJourneyPage from "./pages/AboutJourneyPage.tsx";
+import ContactUsPage from "./pages/ContactUsPage.tsx";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
                   </PrivateRoute>}
               />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/OurJourney" element={<AboutJourneyPage />} />
+              <Route path="/Our-Journey" element={<AboutJourneyPage />} />
+              <Route path="/Contact-Us" element={<ContactUsPage/>} />
           </Routes>
       </>
   )
