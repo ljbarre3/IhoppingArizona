@@ -166,7 +166,7 @@ export default function GoogleMap() {
                             {selectedIhopLocation?.mainReview?.imageUrl && (
                                 <div style={{ position: 'relative', marginBottom: "1rem" }}>
                                     <img
-                                        src={`http://localhost:8080${selectedIhopLocation.mainReview.imageUrl}`}
+                                        src={`${baseUrl}:8080${selectedIhopLocation.mainReview.imageUrl}`}
                                         alt="IHOP Review"
                                         style={{
                                             width: '100%',
