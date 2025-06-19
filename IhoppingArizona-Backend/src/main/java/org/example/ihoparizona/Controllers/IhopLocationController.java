@@ -32,6 +32,7 @@ public class IhopLocationController {
 
     private final IhopLocationService ihopLocationService;
     private final MainReviewService mainReviewService;
+    private static final Path UPLOAD_DIR = Paths.get("/app/uploads");
 
     @PostMapping("/addIhop")
     public ResponseEntity<IhopLocation> addIhop(@Valid @RequestBody IhopLocation ihopLocation) {
@@ -124,11 +125,11 @@ public class IhopLocationController {
     public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {
             String fileName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
-            Path uploadPath = Paths.get("uploads");
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
+            if (!Files.exists(UPLOAD_DIR)) {
+                Files.createDirectories(UPLOAD_DIR);
             }
-            Path filePath = uploadPath.resolve(fileName);
+
+            Path filePath = UPLOAD_DIR.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             String imageUrl = "/uploads/" + fileName;
