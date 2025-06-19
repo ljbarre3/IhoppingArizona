@@ -44,11 +44,11 @@ const theme = createTheme({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
       <Auth0Provider
-          domain= "dev-tambq5b5783bb6e2.us.auth0.com"
-          clientId= "oXhM7jbpItm0e5ytK5fWkrSUDFHjb4Y5"
+          domain= {import.meta.env.VITE_AUTH0_DOMAIN}
+          clientId= {import.meta.env.VITE_AUTH0_CLIENT_ID}
           authorizationParams={{
-              redirect_uri: "http://localhost:5173/admin",
-              audience: "https://ihoppingarizona/api"
+              redirect_uri: "https://ihoppingarizonafrontend.onrender.com/admin",
+              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
           }}
           >
       <MantineProvider theme={theme} defaultColorScheme="light">
