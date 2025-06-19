@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/api/public", "/api/admin/ihopLocation/list/with-main-reviews").permitAll()       // no authentication
+                        .requestMatchers("/api/public", "/api/admin/ihopLocation/list/with-main-reviews", "/api/contact/submit").permitAll()       // no authentication
                         .requestMatchers("/api/admin/**").authenticated()    // must be an user role
                         .anyRequest().denyAll()
                 )
