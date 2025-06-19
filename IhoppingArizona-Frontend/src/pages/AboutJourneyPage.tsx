@@ -34,7 +34,7 @@ const AboutJourneyPage: React.FC = () => {
                 borderBottomLeftRadius: "1Rem",
             }}>
                 <Image
-                    src={"/src/assets/Levi_Selfie2.jpg"}
+                    src={"/src/assets/Levi_Selfie.jpg"}
                      alt={"Picture of Levi"}
                     height={"600"}
                        radius={"md"}
@@ -91,7 +91,7 @@ const AboutJourneyPage: React.FC = () => {
                 borderBottomRightRadius: "1Rem",
             }}>
                 <Image
-                    src={"/src/assets/Levi_Selfie2.jpg"}
+                    src={"/src/assets/Austin_Selfie.jpg"}
                     alt={"Picture of Austin"}
                     height={"600"}
                     radius={"md"}
