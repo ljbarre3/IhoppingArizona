@@ -7,7 +7,7 @@ import PancakeReview from '../components/PancakeReview';
 import {FinalPancakeStack} from '../components/FinalPancakeStack';
 import DOMPurify from 'dompurify'
 
-const ihopMarkerIcon = "/src/assets/icons8-pancake-stack-48.png";
+const ihopMarkerIcon = "/icons8-pancake-stack-48.png";
 
 
 
@@ -50,6 +50,7 @@ type MainReview = {
 }
 
 export default function GoogleMap() {
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
     const [ihopLocations, setIhopLocations] = useState<IhopLocation[]>([]);
     const [selectedIhopLocation, setSelectedIhopLocation] = useState<IhopLocation | null>(null);
 
@@ -57,7 +58,7 @@ export default function GoogleMap() {
     useEffect(() => {
         const fetchLocations = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/admin/ihopLocation/list/with-main-reviews', {});
+                const res = await fetch(`${baseUrl}:8080/api/admin/ihopLocation/list/with-main-reviews`, {});
                 if (!res.ok) throw new Error('Failed to fetch IHOP locations');
                 const data: IhopLocation[] = await res.json();
                 const formatted = data.map((loc) => ({
@@ -104,7 +105,7 @@ export default function GoogleMap() {
                 color={"#eca24d"}>
             </Progress>
             <img
-                src="/src/assets/maple-syrup.png"
+                src="/maple-syrup.png"
                 alt="Syrup Bottle"
                 style = {{
                     position: "absolute",

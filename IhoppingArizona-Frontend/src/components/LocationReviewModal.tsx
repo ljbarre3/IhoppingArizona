@@ -26,6 +26,7 @@ type ReviewModalProps = {
 
 export default function ReviewModal({ opened, onClose, onSubmit, location, mode}: ReviewModalProps) {
     const { getAccessTokenSilently } = useAuth0();
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
     
     const [originalReview, setOriginalReview] = useState<ReviewPayload | null>(null);
     const [locationRating, setLocationRating] = useState<number | ''>('');
@@ -101,7 +102,7 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
                 const token = await getAccessTokenSilently();
                 const formData = new FormData();
                 formData.append('file', imageFile);
-                await fetch(`http://localhost:8080/api/admin/ihopLocation/review/${location.id}/upload-image`, {
+                await fetch(`${baseUrl}:8080/api/admin/ihopLocation/review/${location.id}/upload-image`, {
                     method: 'POST',
                     headers: {
                         Authorization: `Bearer ${token}`,

@@ -12,6 +12,7 @@ const ContactUsPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,7 +39,7 @@ const ContactUsPage: React.FC = () => {
             }
 
             console.log(payload);
-            const res = await fetch('http://localhost:8080/api/contact/submit', {
+            const res = await fetch(`${baseUrl}:8080/api/contact/submit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

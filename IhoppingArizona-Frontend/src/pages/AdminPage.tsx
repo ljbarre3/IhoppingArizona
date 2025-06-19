@@ -17,6 +17,7 @@ type IhopLocation = {
 
 const AdminPage: React.FC = () => {
     const { getAccessTokenSilently } = useAuth0();
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
     const [reviewModalOpen, setReviewModalOpened] = useState(false);
     const [locationModalOpen, setLocationModalOpened] = useState(false);
@@ -37,7 +38,7 @@ const AdminPage: React.FC = () => {
     const fetchLocations = async () => {
         try {
             const token = await getAccessTokenSilently();
-            const res = await fetch('http://localhost:8080/api/admin/ihopLocation/list/with-main-reviews', {
+            const res = await fetch(`${baseUrl}:8080/api/admin/ihopLocation/list/with-main-reviews`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -58,7 +59,7 @@ const AdminPage: React.FC = () => {
     }) => {
         try {
             const token = await getAccessTokenSilently();
-            const res = await fetch('http://localhost:8080/api/admin/ihopLocation/addIhop', {
+            const res = await fetch(`${baseUrl}:8080/api/admin/ihopLocation/addIhop`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ const AdminPage: React.FC = () => {
     ) => {
         try {
             const token = await getAccessTokenSilently();
-            const res = await fetch(`http://localhost:8080/api/admin/ihopLocation/${selectedLocationId}/review/create`, {
+            const res = await fetch(`${baseUrl}:8080/api/admin/ihopLocation/${selectedLocationId}/review/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,7 +129,7 @@ const AdminPage: React.FC = () => {
     ) => {
         try {
             const token = await getAccessTokenSilently();
-            const res = await fetch(`http://localhost:8080/api/admin/ihopLocation/${selectedLocationId}/review/update`, {
+            const res = await fetch(`${baseUrl}:8080/api/admin/ihopLocation/${selectedLocationId}/review/update`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -162,7 +163,7 @@ const AdminPage: React.FC = () => {
     const handleDeleteReview = async (locationId: number) => {
         try {
             const token = await getAccessTokenSilently();
-            const res = await fetch(`http://localhost:8080/api/admin/ihopLocation/${locationId}/review/delete`, {
+            const res = await fetch(`${baseUrl}:8080/api/admin/ihopLocation/${locationId}/review/delete`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -188,7 +189,7 @@ const AdminPage: React.FC = () => {
     const handleDeleteLocation = async (locationId: number) => {
         try {
             const token = await getAccessTokenSilently();
-            const res = await fetch(`http://localhost:8080/api/admin/ihopLocation/delete/${locationId}`, {
+            const res = await fetch(`${baseUrl}:8080/api/admin/ihopLocation/delete/${locationId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

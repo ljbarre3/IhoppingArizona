@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 // @ts-ignore
-import PancakeIcon from '../assets/Pancake-Stack.svg?react';
+import PancakeIcon from '/Pancake-Stack.svg?react';
 
 type FinalPancakeStackProps = {
     finalScore: number; // e.g. 37 out of 43
