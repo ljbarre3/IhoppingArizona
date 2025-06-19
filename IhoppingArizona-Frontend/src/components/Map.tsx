@@ -58,7 +58,7 @@ export default function GoogleMap() {
     useEffect(() => {
         const fetchLocations = async () => {
             try {
-                const res = await fetch(`${baseUrl}:8080/api/admin/ihopLocation/list/with-main-reviews`, {});
+                const res = await fetch(`${baseUrl}/api/admin/ihopLocation/list/with-main-reviews`, {});
                 if (!res.ok) throw new Error('Failed to fetch IHOP locations');
                 const data: IhopLocation[] = await res.json();
                 const formatted = data.map((loc) => ({
@@ -166,7 +166,7 @@ export default function GoogleMap() {
                             {selectedIhopLocation?.mainReview?.imageUrl && (
                                 <div style={{ position: 'relative', marginBottom: "1rem" }}>
                                     <img
-                                        src={`${baseUrl}:8080${selectedIhopLocation.mainReview.imageUrl}`}
+                                        src={`${baseUrl}${selectedIhopLocation.mainReview.imageUrl}`}
                                         alt="IHOP Review"
                                         style={{
                                             width: '100%',

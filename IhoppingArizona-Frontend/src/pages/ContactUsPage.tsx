@@ -39,7 +39,7 @@ const ContactUsPage: React.FC = () => {
             }
 
             console.log(payload);
-            const res = await fetch(`${baseUrl}:8080/api/contact/submit`, {
+            const res = await fetch(`${baseUrl}/api/contact/submit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

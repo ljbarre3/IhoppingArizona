@@ -102,7 +102,7 @@ export default function ReviewModal({ opened, onClose, onSubmit, location, mode}
                 const token = await getAccessTokenSilently();
                 const formData = new FormData();
                 formData.append('file', imageFile);
-                await fetch(`${baseUrl}:8080/api/admin/ihopLocation/review/${location.id}/upload-image`, {
+                await fetch(`${baseUrl}/api/admin/ihopLocation/review/${location.id}/upload-image`, {
                     method: 'POST',
                     headers: {
                         Authorization: `Bearer ${token}`,
