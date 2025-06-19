@@ -6,6 +6,7 @@ const LoginPage = () => {
     const { loginWithRedirect } = useAuth0();
 
     useEffect(() => {
+        console.log("Triggering login");
         loginWithRedirect();
     }, [loginWithRedirect]);
 
