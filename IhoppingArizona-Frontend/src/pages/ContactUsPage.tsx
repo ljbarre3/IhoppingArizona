@@ -75,115 +75,170 @@ const ContactUsPage: React.FC = () => {
     };
 
     return (
-        <div style={{marginTop:"4Rem"}} >
-        <Grid justify="center" >
-            <Grid.Col span={4} >
-                <form onSubmit={handleSubmit}>
-                    <Stack gap={"50"} align="center" style={{marginRight:"2rem"}}>
-                    <Grid gutter={20} >
-                        <Grid.Col span={6} >
-                            <TextInput
-                                label={"First Name:"}
-                                labelProps={{ style:
-                                        {color: "white", opacity: 0.87}}}
-                                size={"sm"}
-                                radius={"md"}
-                                placeholder={"Your first name"}
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.currentTarget.value)}
+        <div style={{ marginTop: "4rem" }}>
+            <Grid
+                justify="center"
+                align="stretch"
+                gutter="xl"
+                style={{ maxWidth: 1000, margin: "0 auto" }}
+            >
+                <Grid.Col
+                    span={{ base: 12, md: 5 }}
+                    order={{ base: 0, md: 1 }}
+                    style={{
+                        alignContent: "center",
+                        marginTop: "1rem",
+                    }}
+                >
+                    <Stack gap="md" style={{ marginLeft: "1rem" }}>
+                        <div>
+                            <Title
+                                style={{
+                                    color: "white",
+                                    opacity: 0.87,
+                                    textAlign: "center",
+                                    marginBottom: "1.5rem",
+                                }}
                             >
-                            </TextInput>
-                        </Grid.Col>
-
-                        <Grid.Col span={6} style={{borderRight:"solid 2px #057dc4"}}>
-                            <TextInput
-                                label={"Last Name:"}
-                                labelProps={{ style:
-                                        {color: "white", opacity: 0.87}}}
-                                size={"sm"}
-                                radius={"md"}
-                                placeholder={"Your last name"}
-                                value={lastName}
-                                onChange={(e) => setLastName(e.currentTarget.value)}
+                                Contact Us
+                            </Title>
+                            <Text
+                                style={{
+                                    color: "white",
+                                    opacity: 0.87,
+                                    marginBottom: "1.5rem",
+                                }}
                             >
-                            </TextInput>
-                        </Grid.Col>
-
-
-                        <Grid.Col span={12} style={{borderRight:"solid 2px #057dc4"}}>
-                            <TextInput
-                                label={"Email Address:"}
-                                labelProps={{ style:
-                                        {color: "white", opacity: 0.87}}}
-                                size={"sm"}
-                                radius={"md"}
-                                placeholder={"Your Email Address"}
-                                type={"email"}
-                                value={email}
-                                onChange={(e) => setEmail(e.currentTarget.value)}
-                            >
-                            </TextInput>
-                        </Grid.Col>
-                        <Grid.Col span={12} style={{borderRight:"solid 2px #057dc4"}}>
-                            <Textarea
-                                label={"Please Share your Thoughts?"}
-                                labelProps={{ style:
-                                        {color: "white", opacity: 0.87}}}
-                                radius={"md"}
-                                size={"xl"}
-                                autosize
-                                minRows={4}
-                                maxRows={10}
-                                placeholder={"Your thoughts here"}
-                                value={feedback}
-                                onChange={(e) => setFeedback(e.currentTarget.value)}
-                            >
-                            </Textarea>
-                        </Grid.Col>
-                        <Grid.Col span={8} offset={4} style={{borderRight:"solid 2px #057dc4"}}>
-                            <Button radius={"md"} w={"50%"} type="submit" loading={loading}>Submit</Button>
-                        </Grid.Col>
-                    </Grid>
+                                Have questions, feedback, or just want to connect?
+                                <br />
+                                <br />
+                                Fill out the form below and we’ll get back to you as soon as
+                                we’ve cleared our next plate of pancakes. Thanks for joining us
+                                on this journey!
+                            </Text>
+                        </div>
                     </Stack>
+                </Grid.Col>
+                <Grid.Col
+                    span={{ base: 12, md: 7 }}
+                    order={{ base: 1, md: 0 }}
+                >
+                    <form onSubmit={handleSubmit}>
+                        <Stack gap="xl" align="stretch" style={{ marginRight: "1rem" }}>
+                            <Grid gutter={20}>
+                                <Grid.Col span={{ base: 12, sm: 6 }}>
+                                    <TextInput
+                                        label="First Name:"
+                                        labelProps={{
+                                            style: { color: "white", opacity: 0.87 },
+                                        }}
+                                        size="sm"
+                                        radius="md"
+                                        placeholder="Your first name"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.currentTarget.value)}
+                                    />
+                                </Grid.Col>
+
+                                <Grid.Col
+                                    span={{ base: 12, sm: 6 }}
+                                    style={{ borderRight: "solid 2px #057dc4" }}
+                                >
+                                    <TextInput
+                                        label="Last Name:"
+                                        labelProps={{
+                                            style: { color: "white", opacity: 0.87 },
+                                        }}
+                                        size="sm"
+                                        radius="md"
+                                        placeholder="Your last name"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.currentTarget.value)}
+                                    />
+                                </Grid.Col>
+
+                                <Grid.Col
+                                    span={12}
+                                    style={{ borderRight: "solid 2px #057dc4" }}
+                                >
+                                    <TextInput
+                                        label="Email Address:"
+                                        labelProps={{
+                                            style: { color: "white", opacity: 0.87 },
+                                        }}
+                                        size="sm"
+                                        radius="md"
+                                        placeholder="Your Email Address"
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.currentTarget.value)}
+                                    />
+                                </Grid.Col>
+
+                                <Grid.Col
+                                    span={12}
+                                    style={{ borderRight: "solid 2px #057dc4" }}
+                                >
+                                    <Textarea
+                                        label="Please Share your Thoughts?"
+                                        labelProps={{
+                                            style: { color: "white", opacity: 0.87 },
+                                        }}
+                                        radius="md"
+                                        size="md"
+                                        autosize
+                                        minRows={4}
+                                        maxRows={10}
+                                        placeholder="Your thoughts here"
+                                        value={feedback}
+                                        onChange={(e) => setFeedback(e.currentTarget.value)}
+                                    />
+                                </Grid.Col>
+
+                                <Grid.Col
+                                    span={12}
+                                    style={{
+                                        borderRight: "solid 2px #057dc4",
+                                        display: "flex",
+                                        justifyContent: "flex-end",
+                                    }}
+                                >
+                                    <Button
+                                        radius="md"
+                                        w={{ base: "100%", sm: "50%" }}
+                                        type="submit"
+                                        loading={loading}
+                                    >
+                                        Submit
+                                    </Button>
+                                </Grid.Col>
+                            </Grid>
+                        </Stack>
                     </form>
-            </Grid.Col>
-            <Grid.Col span={3} style={{alignContent: "center"}}>
-                <Stack gap={"50"} style={{marginLeft: "2Rem"}} >
-                    <div>
-                        <Title style={{color: "white",
-                            opacity: .87, textAlign: "center", marginBottom: "1.5Rem"}}>Contact Us</Title>
-                        <Text style={{color: "white",
-                            opacity: .87, marginBottom: "1.5Rem"}}> Have questions, feedback, or just want to connect?
-                            <span><br/> <br/></span>
-                            Fill out the form to the left and we’ll get back to you as soon as we’ve cleared our next plate of pancakes.
-                            Thanks for joining us on this journey!
-                        </Text>
-                    </div>
-                </Stack>
-            </Grid.Col>
-        </Grid>
-        <Grid justify="center">
-            <Grid.Col span={2} offset={3}>
-                {success && (
-                    <Box>
-                        <Notification color="green" onClose={() => setSuccess(false)}>
-                            Message sent successfully!
-                        </Notification>
-                    </Box>
-                )}
+                </Grid.Col>
+            </Grid>
+            <Grid
+                justify="center"
+                style={{ maxWidth: 800, margin: "1.5rem auto 0 auto" }}
+            >
+                <Grid.Col span={12}>
+                    {success && (
+                        <Box mb="sm">
+                            <Notification color="green" onClose={() => setSuccess(false)}>
+                                Message sent successfully!
+                            </Notification>
+                        </Box>
+                    )}
 
-                {error && (
-                    <Box>
-                        <Notification color="red" onClose={() => setError(null)}>
-                            {error}
-                        </Notification>
-                    </Box>
-                )}
-            </Grid.Col>
-            <Grid.Col span={6}>
-            </Grid.Col>
-        </Grid>
-
+                    {error && (
+                        <Box>
+                            <Notification color="red" onClose={() => setError(null)}>
+                                {error}
+                            </Notification>
+                        </Box>
+                    )}
+                </Grid.Col>
+            </Grid>
         </div>
     );
 };

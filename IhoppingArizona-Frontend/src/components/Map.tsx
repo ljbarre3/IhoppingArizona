@@ -5,6 +5,7 @@ import {useState, useEffect, JSX} from "react";
 import PancakeReview from '../components/PancakeReview';
 // @ts-expect-error Error is needed for future development.
 import {FinalPancakeStack} from '../components/FinalPancakeStack';
+import { useMediaQuery } from '@mantine/hooks';
 import DOMPurify from 'dompurify'
 
 const ihopMarkerIcon = "/icons8-pancake-stack-48.png";
@@ -54,6 +55,7 @@ export default function GoogleMap() {
     const [ihopLocations, setIhopLocations] = useState<IhopLocation[]>([]);
     const [selectedIhopLocation, setSelectedIhopLocation] = useState<IhopLocation | null>(null);
 
+    const isMobile = useMediaQuery('(max-width: 768px)');
 
     useEffect(() => {
         const fetchLocations = async () => {
@@ -151,7 +153,7 @@ export default function GoogleMap() {
                                  position: "absolute",
                                  top: 0,
                                  right: 0,
-                                 width: "50%",
+                                 width: isMobile ? "100%" : "50%",
                                  height: "96%",
                                  backgroundColor: "#FAF9F6",
                                  boxShadow: "-2px 0px 10px rgba(0, 0, 0, 0.1)",
